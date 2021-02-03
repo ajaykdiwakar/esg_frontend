@@ -1,0 +1,136 @@
+body{
+  font-size: 12px !important;
+
+}
+label {
+  display: block;
+  margin-top: 10px;
+}
+
+.card-container.card {
+  max-width: 350px !important;
+  padding: 40px 40px;
+}
+
+.card {
+  background-color: #f7f7f7;
+  padding: 20px 25px 30px;
+  margin: 0 auto 25px;
+  margin-top: 50px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+}
+
+.profile-img-card {
+  /* width: 96px;
+  height: 96px;
+  margin: 0 auto 10px;
+  display: block;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  border-radius: 50%; */
+  top: 75px;
+left: 1308px;
+width: 249px;
+height: 83px;
+}
+.navbar{
+  height: 47px !important;
+  top: 0px;
+  left: 0px;
+  height: 60px;
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #7E7E7E29;
+  opacity: 1;
+}
+.logo{
+  margin-top: 0px;
+  margin-left: 60px;
+  width: 142px;
+  height: 40px;
+}
+.img-thumbnail {
+  border: 0px solid #dee2e6;
+}
+.nav-link, Link{
+  /* color: #50BFA5 !important; */
+  color: #155F9B !important;
+
+}
+.b-image {
+  background-color: #50BFA5 !important;
+  margin-top: 10% !important;
+  margin-left: 8% !important;
+  width: 87% !important;
+  height: auto !important;
+  /* background: transparent url(img/Illustration.png) 0% 0% no-repeat padding-box; */
+}
+.img-thumbnail {
+  border: 0px solid #dee2e6 !important;
+}
+.login-img{
+  background-color: #50BFA5 !important;
+  height: 610px;
+}
+.col-sm-8{
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+}
+.login_container{
+  max-width: 1248px !important;
+  height: 610px !important;
+  margin: 0px 0px 0px 0px !important;
+  padding: 0px 0px 0px 0px !important;
+}
+.login_card{
+  /* margin-top: 75px;
+  margin-left: 86px;
+  width: 335px; */
+  margin-top:   10% !important;
+  margin-left: 14% !important;
+  width: 70% !important;
+  height: auto !important;
+}
+.logo{
+  margin-bottom: 90px;
+  margin-top: 0px;
+  margin-left: -27px;
+  width: 200px;
+  height: 70px;
+}
+.nav-logo{
+  top: 7px ;
+  left: 60px;
+  width: 142px;
+  height: 47px;
+  
+}
+.main_content{
+  margin-top: 4%;
+}
+.jumbotron{
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 0px 6px #7E7E7E28;
+}
+.form-control{
+  color: #444C59 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+input:-internal-autofill-selected {
+  background-color: #D4D4D428 !important;
+}
+.btn-primary{
+  background-color: #155F9B !important;
+}
+.btn{
+  width: 120px;
+  height: 35px;
+  font-size: 12px;
+  font-weight: 500;
+  margin: 0px 5px 0px 5px;
+}
