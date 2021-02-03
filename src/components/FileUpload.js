@@ -17,16 +17,6 @@ const SheetJSFT = [
 
 // Data Exchange Portal
 
-
-/* generate an array of column objects */
-const make_cols = refstr => {
-  debugger
-  let o = [], C = XLSX.utils.decode_range(refstr['!ref']);
-  // XLSX.utils.decode_range(sheet['!ref']);
-	for(var i = 0; i < C; ++i) o[i] = {name:XLSX.utils.encode_col(i), key:i}
-	return o;
-};
-
   class FileUpload extends React.Component {
 
     constructor(props) {
