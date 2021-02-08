@@ -73,12 +73,12 @@ const onPrevious = () => onChange(step - 1);
   return (
     <Router history={history}>
         <Switch>
-            <Route exact path="/login" component={Login} />
+            <Route exact path="/" component={Login} />
                 <Route>
                 <div>
                     {/* <div className="container mt-3"> */}
                     <nav className="navbar navbar-expand navbar-dark">
-                        <Link to={"/"} className="navbar-brand">
+                        <Link to={"/home"} className="navbar-brand">
                             <Image className="nav-logo" src={logo} thumbnail />
                         </Link>
                         <div className="navbar-nav mr-auto">
@@ -105,15 +105,20 @@ const onPrevious = () => onChange(step - 1);
                                 </Link>
                             </li>
                             <li className="nav-item">
-                                <a href="/login" className="nav-link" onClick={logOut}>
+                                <a href="/" className="nav-link" onClick={logOut}>
                                 LogOut
                                 </a>
                             </li>
                         </div>
                     ) : (
                         <div className="navbar-nav ml-auto">
-                        <li className="nav-item">
-                            <Link to={"/login"} className="nav-link">
+                             <li className="nav-item">
+                            <Link  className="nav-link">
+                            Welcome Super Admin!
+                            </Link>
+                        </li>
+                        {/* <li className="nav-item">
+                            <Link to={"/"} className="nav-link">
                             Login
                             </Link>
                         </li>
@@ -122,7 +127,7 @@ const onPrevious = () => onChange(step - 1);
                             <Link to={"/register"} className="nav-link">
                             Sign Up
                             </Link>
-                        </li>
+                        </li> */}
                        
                         </div>
                     )}
@@ -154,7 +159,8 @@ const onPrevious = () => onChange(step - 1);
                         </Col>
                         <Col sm={9}>
                             <Switch>
-                            <Route exact path={["/", "/home"]} component={Home} />
+                            <Route exact path={["/", "/login"]} component={Login} />
+                            <Route exact path="/home" component={Home} />
                             <Route exact path="/register" component={Register} />
                             <Route exact path="/profile" component={Profile} />
                             <Route path="/fileUpload" component={FileUpload} />

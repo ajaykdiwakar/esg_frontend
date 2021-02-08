@@ -6,6 +6,9 @@ label {
   display: block;
   margin-top: 10px;
 }
+.table {
+  margin-top: 20px !important;
+}
 
 .card-container.card {
   max-width: 350px !important;
@@ -76,10 +79,6 @@ height: 83px;
   background-color: #50BFA5 !important;
   height: 610px;
 }
-.col-sm-8{
-  padding-left: 0px !important;
-  padding-right: 0px !important;
-}
 .login_container{
   max-width: 1248px !important;
   height: 610px !important;
@@ -133,4 +132,20 @@ input:-internal-autofill-selected {
   font-size: 12px;
   font-weight: 500;
   margin: 0px 5px 0px 5px;
+}
+.table-col{
+  margin-top: 20px !important;
+  padding: 0px !important;
+}
+.select{
+  width: 100%;
+  background: 0% 0% no-repeat padding-box padding-box rgb(240, 241, 244);
+  border: 1px solid rgba(212, 212, 212, 0.157);
+  border-radius: 4px;
+  opacity: 1;
+  height: 30px;
+  padding: 0px 5px;
+}
+.jumbotron {
+  padding: 2rem 2rem;
 }
