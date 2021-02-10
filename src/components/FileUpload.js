@@ -5,15 +5,10 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
 import UserService from "../services/user.service";
-import XLSX from "xlsx";
 import InputGroup from "react-bootstrap/InputGroup";
 import Form from "react-bootstrap/Form";
 import Card from "react-bootstrap/Card";
-import readXlsxFile from "read-excel-file";
-import $ from 'jquery';
-import Table from 'react-bootstrap/Table'
 
-import axios from 'axios'
 import ReactTable from "react-table"; 
 import 'react-table/react-table.css'
 
@@ -45,9 +40,6 @@ const SheetJSFT = [
   })
   .join(",");
 
-// Data Exchange Portal
-
-
 class FileUpload extends React.Component {
 
   
@@ -63,7 +55,8 @@ class FileUpload extends React.Component {
       selectedFile: null,
       selectedCompany: "",
       companies: [],
-      companyData: {}
+      companyData: {},
+      finalArray: []
     };  
     this.sendData = this.sendData.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -73,13 +66,11 @@ class FileUpload extends React.Component {
   }
 
   componentDidMount() {
-    debugger
-    fetch("http://858cb1e5b0d9.ngrok.io/getAllCompany", {
+    fetch("http://4b01d37a8009.ngrok.io/getAllCompany", {
       method: "GET"
     })
       .then((response) => response.json())
       .then((data) => {
-        debugger
         console.log("Success:", data);
         this.setState({
           companies: data.data
@@ -87,21 +78,18 @@ class FileUpload extends React.Component {
         // alert(data.message)
       })
       .catch((error) => {
-        debugger
         console.error("Error:", error);
         alert(error.message)
       });
   }
 
   handleChange(e) {
-    debugger
     this.setState({
       selectedFile: e.target.files,
     });
   }
 
   sendData(e) {
-    debugger
     e.preventDefault();
     var input = document.getElementById('file');
     const data = new FormData();
@@ -110,19 +98,16 @@ class FileUpload extends React.Component {
       data.append("file", this.state.selectedFile[x]);
     }
     console.log(data);
-    debugger
-    fetch("http://858cb1e5b0d9.ngrok.io/taxonomy ", {
+    fetch("http://4b01d37a8009.ngrok.io/taxonomy", {
       method: "POST",
       body: data,
     })
       .then((response) => response.json())
       .then((data) => {
-        debugger
         console.log("Success:", data);
         alert(data.message)
       })
       .catch((error) => {
-        debugger
         console.error("Error:", error);
         alert(error.message)
       });
@@ -142,31 +127,42 @@ class FileUpload extends React.Component {
         companyName : e.target.value
       }
     
-       let url = `http://858cb1e5b0d9.ngrok.io/getNewData/${companyName}`;
+    
+       let url = `http://4b01d37a8009.ngrok.io/getNewData/${companyName}`;
    
        fetch(url, {
          method: "GET"
        })
          .then((response) => response.json())
          .then((data) => {
-           debugger
+          debugger
            console.log("Success:", data.data);
          
    
            this.setState({
              companyData : data
            })
-          //  alert(data.message)
+
+
+           for(let arr of this.state.companyData.data.fiscalYear){
+            for(let arrOne of arr){
+                for(let arrTwo of arrOne){
+                    console.log(arrTwo);
+                    this.state.finalArray.push(arrTwo)
+                }
+            }
+          }
+          console.log("datadcndcd", this.state.finalArray)
+
          })
          .catch((error) => {
-           debugger
+           
            console.error("Error:", error);
            alert(error.message)
          });
 
     }
    
-
   }
 
 
@@ -188,13 +184,18 @@ class FileUpload extends React.Component {
      accessor: 'Response' ,
      }
      ,{  
-     Header: 'unit',  
-     accessor: 'unit',
-     }
+      Header: 'Response Unit',  
+      accessor: 'ResponseUnit',
+      }
+    ,{  
+      Header: 'Performance Unit',  
+      accessor: 'PerformanceUnit',
+      }
+    
   ]
-
    
     return (
+      
       <div className="container">
         <header className="jumbotron">
           <Card.Title
@@ -250,7 +251,13 @@ class FileUpload extends React.Component {
         </Row>
         <Row> 
           <Col sm={12} className="table-col jumbotron" style={{padding: '0px !important'}}>
-              <ReactTable data={this.state.companyData.fiscalYear} columns={columns}  style={{ border: '0px solid rgba(0,0,0,0.1)'}}/>
+ 
+
+
+{this.state.finalArray.length > 0 &&
+       <ReactTable data={this.state.finalArray} columns={columns}  style={{ border: '0px solid rgba(0,0,0,0.1)'}}/>
+      }
+
           </Col>
         </Row>
       </div>
