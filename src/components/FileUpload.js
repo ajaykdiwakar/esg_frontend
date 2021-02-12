@@ -121,7 +121,6 @@ class FileUpload extends React.Component {
 
   }
   getCompanyData(e){
-    debugger
     if(e.target.value == "Select Company"){
       alert("Please Select companies to view data")
     }else{
@@ -142,7 +141,6 @@ class FileUpload extends React.Component {
        })
          .then((response) => response.json())
          .then((data) => {
-          debugger
            console.log("Success:", data.data);
          
    
@@ -154,7 +152,7 @@ class FileUpload extends React.Component {
            for(let arr of this.state.companyData.data.fiscalYear){
             for(let arrOne of arr){
                 for(let arrTwo of arrOne.Data){
-                    console.log(arrTwo);
+                    // console.log(arrTwo);
                     array.push(arrTwo)
                 }
                 // console.log(arrOne.Data);
@@ -162,7 +160,7 @@ class FileUpload extends React.Component {
             
           }
           this.setState({finalArray:array});
-          console.log("datadcndcd", this.state.finalArray)
+          console.log("JSON LIST", this.state.finalArray)
 
          })
          .catch((error) => {
