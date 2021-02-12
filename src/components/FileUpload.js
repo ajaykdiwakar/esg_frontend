@@ -66,23 +66,28 @@ class FileUpload extends React.Component {
   }
 
   componentDidMount() {
-    fetch("http://4b01d37a8009.ngrok.io/getAllCompany", {
+    
+  }
+  getAllCompanies(){
+    fetch("http://0dc709431e27.ngrok.io/getAllCompany", {
       method: "GET"
     })
       .then((response) => response.json())
       .then((data) => {
+        if(data.status === 200){
         console.log("Success:", data);
         this.setState({
           companies: data.data
         })
         // alert(data.message)
+        console.log(this.state.companies);
+      }
       })
       .catch((error) => {
         console.error("Error:", error);
         alert(error.message)
       });
   }
-
   handleChange(e) {
     this.setState({
       selectedFile: e.target.files,
@@ -97,14 +102,16 @@ class FileUpload extends React.Component {
     for (var x = 0; x < this.state.selectedFile.length; x++) {
       data.append("file", this.state.selectedFile[x]);
     }
-    console.log(data);
-    fetch("http://4b01d37a8009.ngrok.io/taxonomy", {
+    console.log(data.getAll('file'));
+
+    fetch("http://0dc709431e27.ngrok.io/taxonomy", {
       method: "POST",
       body: data,
     })
       .then((response) => response.json())
       .then((data) => {
         console.log("Success:", data);
+        this.getAllCompanies()
         alert(data.message)
       })
       .catch((error) => {
@@ -128,7 +135,7 @@ class FileUpload extends React.Component {
       }
     
     
-       let url = `http://4b01d37a8009.ngrok.io/getNewData/${companyName}`;
+       let url = `http://0dc709431e27.ngrok.io/getNewData/${companyName}`;
    
        fetch(url, {
          method: "GET"
@@ -143,15 +150,18 @@ class FileUpload extends React.Component {
              companyData : data
            })
 
-
+           let array = [];
            for(let arr of this.state.companyData.data.fiscalYear){
             for(let arrOne of arr){
-                for(let arrTwo of arrOne){
+                for(let arrTwo of arrOne.Data){
                     console.log(arrTwo);
-                    this.state.finalArray.push(arrTwo)
+                    array.push(arrTwo)
                 }
+                // console.log(arrOne.Data);
             }
+            
           }
+          this.setState({finalArray:array});
           console.log("datadcndcd", this.state.finalArray)
 
          })
@@ -235,7 +245,7 @@ class FileUpload extends React.Component {
         <Row style={{marginRight: '0px !important', marginLeft: '0px !important'}}>
           <Col sm={8}>
              <h5 style={{color: "#155F9B"}}>Data Exchange Portal</h5>
-             <label>Company Name : {this.state.companyData.companyName }</label>
+             <label>Company Name : {this.state.selectedCompany }</label>
           </Col>
           <Col sm={4}>
 
