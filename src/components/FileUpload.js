@@ -111,7 +111,7 @@ class FileUpload extends React.Component {
   //   document.getElementById("fileUploadNames").style.display="block";
   // }
 getAllcompany=()=>{
-  fetch("http://0dc709431e27.ngrok.io/getAllCompany", {
+  fetch("http://localhost:3019/getAllCompany", {
       method: "GET"
     })
       .then((response) => response.json())
@@ -140,7 +140,7 @@ getAllcompany=()=>{
     }
     console.log(data);
    
-    fetch("http://0dc709431e27.ngrok.io/taxonomy ", {
+    fetch("http://localhost:3019/taxonomy ", {
       method: "POST",
       body: data,
     })
@@ -173,7 +173,7 @@ getAllcompany=()=>{
         companyName : e.target.value
       }
     
-       let url = `http://0dc709431e27.ngrok.io/getNewData/${companyName}`;
+       let url = `http://localhost:3019/getNewData/${companyName}`;
    
        fetch(url, {
          method: "GET"
