@@ -13,6 +13,8 @@ import Register from "./components/Register";
 import Home from "./components/Home";
 import Profile from "./components/Profile";
 import FileUpload from "./components/FileUpload";
+import IndexView from './components/IndexView';
+import Viewdata from './components/Viewdata'
 
 
 import { logout } from "./actions/auth";
@@ -134,9 +136,9 @@ const onPrevious = () => onChange(step - 1);
                 </nav>
                 <Container fluid style={{margin: '60px', width: '95%'}}>
                     <Row>
-                        <Col sm={2}>
+                        {/* <Col sm={2}>
                         <div> 
-                            {/* <Steps vertical current={step}>
+                             <Steps vertical current={step}>
                                 <Steps.Item title="Personal Details" description=""/>
                                 <Steps.Item title="Bank Details" description=""/>
                                 <Steps.Item title="Proof Upload" description=""/>
@@ -154,16 +156,20 @@ const onPrevious = () => onChange(step - 1);
                                 <Button onClick={onNext} disabled={step === 3}>
                                 Next
                                 </Button>
-                            </ButtonGroup> */}
+                            </ButtonGroup> 
                         </div>
-                        </Col>
-                        <Col sm={9}>
+                        </Col> */}
+                        <Col sm={12}>
                             <Switch>
                             <Route exact path={["/", "/login"]} component={Login} />
                             <Route exact path="/home" component={Home} />
                             <Route exact path="/register" component={Register} />
                             <Route exact path="/profile" component={Profile} />
                             <Route path="/fileUpload" component={FileUpload} />
+                            <Route path="/IndexView" component={IndexView} />
+                            <Route path="/Viewdata" component={Viewdata} />
+
+                            
                             {/* <Route path="/user" component={BoardUser} /> */}
                             </Switch>
                         </Col>

@@ -50,7 +50,7 @@ const Login = (props) => {
   };
 
   const handleLogin = (e) => {
-    props.history.push("/fileUpload");
+    props.history.push("/IndexView");
     // e.preventDefault();
 
     // setLoading(true);
