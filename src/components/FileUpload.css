@@ -1,7 +1,7 @@
 .btn-submit-spinner {
     display: inline-block;
-    width: 20px;
-    height: 20px;
+    width: 15px;
+    height: 15px;
     border: 3px solid rgba(255,255,255,.3);
     border-radius: 50%;
     border-top-color: #fff;

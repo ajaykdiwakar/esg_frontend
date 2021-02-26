@@ -16,7 +16,7 @@ export default class fileUploader extends React.Component<any, any> {
   public onCreated(): void {
       this.uploadObj.dropArea = this.dropAreaRef;
       this.uploadObj.dataBind();
-  }
+  } 
   constructor(props:any) {
     super(props);
     this.state = {

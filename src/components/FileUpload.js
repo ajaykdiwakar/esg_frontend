@@ -1,8 +1,9 @@
 import { render } from "@testing-library/react";
 import React, { useState, useEffect } from "react";
-import {isNullOrUndefined } from "@syncfusion/ej2-base";
+import { isNullOrUndefined } from "@syncfusion/ej2-base";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import { toast } from "react-toastify";
 
 import UserService from "../services/user.service";
 import XLSX from "xlsx";
@@ -14,9 +15,11 @@ import $ from 'jquery';
 import Table from 'react-bootstrap/Table'
 
 import axios from 'axios'
-import ReactTable from "react-table"; 
+import ReactTable from "react-table";
 import 'react-table/react-table.css'
 import Fileuploader from './FileUploader.tsx';
+import './FileUpload.css';
+import { saveAs } from 'file-saver';
 
 const SheetJSFT = [
   "xlsx",
@@ -50,7 +53,7 @@ const SheetJSFT = [
 
 class FileUpload extends React.Component {
 
-  
+
   fileObj = [];
   fileArray = [];
 
@@ -64,11 +67,13 @@ class FileUpload extends React.Component {
       selectedCompany: "",
       companies: [],
       companyData: {},
-      companyName:[]
-      
-    };  
+      companyName: [],
+      btntype:true,
+      loading:false,
+
+    };
     this.sendData = this.sendData.bind(this);
-   // this.handleChange = this.handleChange.bind(this);
+    // this.handleChange = this.handleChange.bind(this);
     this.getCompanyData = this.getCompanyData.bind(this);
     this.handleChangeexcel = this.handleChangeexcel.bind(this)
 
@@ -76,24 +81,28 @@ class FileUpload extends React.Component {
   }
 
   componentDidMount() {
-   
     
+    let jsonDownload = document.querySelector(".btn-json-download");
+          if(jsonDownload){
+            jsonDownload.disabled = true;
+          }
+
   }
   // file json structure has been changed since we used plugin
-  handleChangeexcel=(e)=>{
-    console.log(e.file,"e")
-    let namearray=[];
-    let selectfilename=e.file;
+  handleChangeexcel = (e) => {
+    console.log(e.file, "e")
+    let namearray = [];
+    let selectfilename = e.file;
     for (const name of selectfilename) {
       namearray.push(name.name)
     }
     this.setState({
-      selectedFile:e.file,
-      companyName:namearray
+      selectedFile: e.file,
+      companyName: namearray
     })
-    console.log(this.state.selectedFile,"filesupload");
+    console.log(this.state.selectedFile, "filesupload");
   }
- 
+
   // handleChange(e) {
   //  alert("handelchange")
   //  console.log(e.target.files,"handle files")
@@ -110,13 +119,13 @@ class FileUpload extends React.Component {
   //   });
   //   document.getElementById("fileUploadNames").style.display="block";
   // }
-getAllcompany=()=>{
-  fetch("http://localhost:3019/getAllCompany", {
+  getAllcompany = () => {
+    fetch("localhost:3019/getAllCompany", {
       method: "GET"
     })
       .then((response) => response.json())
       .then((data) => {
-        
+
         console.log("Success:", data);
         this.setState({
           companies: data.data
@@ -124,215 +133,288 @@ getAllcompany=()=>{
         // alert(data.message)
       })
       .catch((error) => {
-        
+
         console.error("Error:", error);
         alert(error.message)
       });
-}
+  }
   sendData(e) {
-    
+
     e.preventDefault();
     var input = document.getElementById('file');
     const data = new FormData();
     console.log(this.state.selectedFile);
+    if(this.state.selectedFile && this.state.selectedFile.length > 0){
     for (var x = 0; x < this.state.selectedFile.length; x++) {
       data.append("file", this.state.selectedFile[x]);
     }
     console.log(data);
-   
-    fetch("http://localhost:3019/taxonomy ", {
+
+    fetch("localhost:3019/taxonomy ", {
       method: "POST",
       body: data,
+      
     })
       .then((response) => response.json())
       .then((data) => {
-        if(data.status===200){
-        this.getAllcompany()
-        console.log("Success:", data);
-        alert(data.message)
+        if (data.status === 200) {
+          this.getAllcompany()
+          console.log("Success:", data);
+          alert(data.message)
         }
       })
       .catch((error) => {
-        
+
+        console.error("Error:", error);
+        alert(error.message)
+      });}
+      else{
+        alert("Please Attach Aleast One File");
+      }
+
+  }
+  getCompanyData(e) {
+
+    if (e.target.value == "Select Company") {
+      alert("Please Select companies to view data")
+    } else {
+
+      this.setState({
+        selectedCompany: e.target.value,
+        btntype : false
+      })
+      const { companyName } = {
+        companyName: e.target.value
+      }
+  
+      let url = `localhost:3019/${companyName}`;
+  
+      fetch(url, {
+        method: "GET"
+      })
+        .then((response) => response.json())
+        .then((data) => {
+  
+          console.log("Success:", data);
+
+          let jsonDownload = document.querySelector(".btn-json-download");
+          if(jsonDownload){
+            jsonDownload.disabled = false;
+          }
+          this.setState({
+            companyData: data
+          })
+          let array = [];
+          for (let arr of this.state.companyData.data.fiscalYear) {
+            for (let arrOne of arr) {
+              for (let arrTwo of arrOne.Data) {
+                // console.log(arrTwo);
+                array.push(arrTwo)
+              }
+              // console.log(arrOne.Data);
+            }
+
+          }
+          this.setState({ finalArray: array });
+          console.log("JSON LIST", this.state.finalArray)
+        })
+        .catch((error) => {
+  
+          console.error("Error:", error);
+          alert(error.message)
+        });
+    }
+  }
+
+  getCompanyCalculation=()=>{
+    const { companyName } = {
+      companyName: this.state.selectedCompany
+    }
+    this.setState({
+      loading:true
+    })
+    let url = `localhost:3019/calculation/${companyName}`;
+
+    fetch(url, {
+      method: "POST",
+      
+    })
+      .then((response) => response.json())
+      .then((data) => {
+
+        console.log("Success:", data);
+        alert("Calculation Completed Successfully");
+        this.setState({
+          loading:false
+        })
+        // this.setState({
+        //   companyData: data
+        // })
+        //  alert(data.message)
+      })
+      .catch((error) => {
+        this.setState({
+          loading:false
+        })
         console.error("Error:", error);
         alert(error.message)
       });
 
   }
-  getCompanyData(e){
-    
-    if(e.target.value == "Select Company"){
-      alert("Please Select companies to view data")
-    }else{
 
-      this.setState({
-        selectedCompany: e.target.value
-       })
-       
-       const { companyName } = {
-        companyName : e.target.value
-      }
-    
-       let url = `http://localhost:3019/getNewData/${companyName}`;
-   
-       fetch(url, {
-         method: "GET"
-       })
-         .then((response) => response.json())
-         .then((data) => {
-           
-           console.log("Success:", data.data);
-         
-   
-           this.setState({
-             companyData : data
-           })
-          //  alert(data.message)
-         })
-         .catch((error) => {
-           
-           console.error("Error:", error);
-           alert(error.message)
-         });
-
-    }
-   
-
+  downloadData = () => {
+    const { companyData } = this.state
+    const fileName = 'Data.json';
+    // Create a blob of the data
+    const fileToSave = new Blob([JSON.stringify(companyData)], {
+    type: 'text/plain;charset=utf-8',
+    name: fileName
+     });
+    // Save the file
+    saveAs(fileToSave, fileName);
   }
-  
-
-
 
   render() {
-
-    const columns = [{  
-      Header: 'Year',  
+    let loading = this.state.loading;
+    const columns = [{
+      Header: 'Year',
       accessor: 'Year',
-     }
-     ,{  
-      Header: 'DPCode',  
-      accessor: 'DPCode' ,
-      }
-     
-     ,{  
-     Header: 'Response',  
-     accessor: 'Response' ,
-     }
-     ,{  
-     Header: 'unit',  
-     accessor: 'unit',
-     }
-  ]
-
-  const FileNameinfo=(arg)=>{
-    let filenames=arg.data;
-    console.log(filenames,"filenames");
-    if(!isNullOrUndefined(filenames)){
-      if(filenames.length>1){
-      return(
-        <div>
-          <div>
-          {filenames.map((filename)=>(
-                <div>{filename}</div>
-           ))}
-          </div>
-        </div>
-      )
-          }
     }
-    return (<div></div>);
-  }
-   
+      , {
+      Header: 'DPCode',
+      accessor: 'DPCode',
+    }
+
+      , {
+      Header: 'Response',
+      accessor: 'Response',
+    }
+      , {
+      Header: 'unit',
+      accessor: 'unit',
+    }
+    ]
+
+    const FileNameinfo = (arg) => {
+      let filenames = arg.data;
+      console.log(filenames, "filenames");
+      if (!isNullOrUndefined(filenames)) {
+        if (filenames.length > 1) {
+          return (
+            <div>
+              <div>
+                {filenames.map((filename) => (
+                  <div>{filename}</div>
+                ))}
+              </div>
+            </div>
+          )
+        }
+      }
+      return (<div></div>);
+    }
+
     return (
       <div className="container">
         <Card.Title
-            style={{
-              height: "22px",
-              textAlign: "left",
-              fontSize: "25px",
-              letterSpacing: "0px",
-              color: "#155F9B",
-              fontWeight: "600",
-              margin: "0 auto",
-              width: "23%",
-              marginBottom:"50px"
-            }}
-          >
-              Data Uploading
+          style={{
+            height: "22px",
+            textAlign: "left",
+            fontSize: "25px",
+            letterSpacing: "0px",
+            color: "#155F9B",
+            fontWeight: "600",
+            margin: "0 auto",
+            width: "23%",
+            marginBottom: "50px"
+          }}
+        >
+          Data Uploading
           </Card.Title>
-          <Row style={{marginRight: '0px !important', marginLeft: '0px !important'}}>
-        <Row>
-        <Card.Title
-            style={{
-              height: "22px",
-              textAlign: "left",
-              fontSize: "20px",
-              letterSpacing: "0px",
-              color: "#155F9B",
-              fontWeight: "600",
-              marginBottom:"30px"
-            }}
-          >
-             STEP 1: 
+        <Row style={{ marginRight: '0px !important', marginLeft: '0px !important' }}>
+          <Row>
+            <Card.Title
+              style={{
+                height: "22px",
+                textAlign: "left",
+                fontSize: "20px",
+                letterSpacing: "0px",
+                color: "#155F9B",
+                fontWeight: "600",
+                marginBottom: "50px"
+              }}
+            >
+              STEP 1:
           </Card.Title>
-          <div style={{fontSize:"15px",color:"#155F9B",marginLeft:"10px",padding: "3px"}}>Upload Excel</div>
+            <div style={{ fontSize: "15px", color: "#155F9B", marginLeft: "10px", padding: "3px" }}>Upload Excel</div>
           </Row>
-        <header className="jumbotron" style={{width:"100%"}}>
-          <Card.Title
-            style={{
-              height: "22px",
-              textAlign: "left",
-              fontSize: "12px",
-              letterSpacing: "0px",
-              color: "#155F9B",
-              fontWeight: "600"
-            }}
-          >
-            Upload File
+          <header className="jumbotron" style={{ width: "100%" }}>
+            <Card.Title
+              style={{
+                height: "22px",
+                textAlign: "left",
+                fontSize: "12px",
+                letterSpacing: "0px",
+                color: "#155F9B",
+                fontWeight: "600"
+              }}
+            >
+              Upload Environmental, Social And Governance File(s)
           </Card.Title>
-          <div>
-            <Row>
-              <Col sm={12}>
-                {/* <Form.File
+            <div>
+              <Row>
+                <Col sm={12}>
+                  {/* <Form.File
                   id="formcheck-api-regular"
                   style={{ width: "459px", height: "83px", fontSize: "12px" }}>
                   <input type="file" className="form-control" id="file" accept={SheetJSFT} onChange={this.handleChange} style={{ top: "322px", left: "406px", width: "459px", 
                   background: "#F0F1F4 0% 0% no-repeat padding-box",border: "1px solid #D4D4D428", borderRadius: "4px", opacity: " 1", height: "auto", }} multiple />
                 </Form.File>  */}
-                    <Fileuploader filenameHandle={this.handleChangeexcel}></Fileuploader>
-              </Col>
-            </Row>
-            <Row>
-              <Col sm={5} style={{marginTop:"20px"}}>
-               
-                <button className="btn btn-primary" style={{fontSize:"15px"}} onClick={this.sendData} >
-                  Upload
+                  <Fileuploader filenameHandle={this.handleChangeexcel}></Fileuploader>
+                </Col>
+              </Row>
+              <Row>
+                <Col sm={5} style={{ marginTop: "20px" }}>
+
+                  <button className="btn btn-primary" style={{ fontSize: "15px" }} onClick={this.sendData} >
+                    Upload
                 </button>
-              </Col>
-            </Row> 
-          </div>
-        </header>
+                </Col>
+              </Row>
+            </div>
+          </header>
         </Row>
-        <Row style={{marginRight: '0px !important', marginLeft: '0px !important'}}>
+        <Row style={{ marginRight: '0px !important', marginLeft: '0px !important' }}>
           <Row>
-        <Card.Title
-            style={{
-              height: "22px",
-              textAlign: "left",
-              fontSize: "20px",
-              letterSpacing: "0px",
-              color: "#155F9B",
-              fontWeight: "600",
-              
-              marginBottom:"30px"
-            }}
-          >
-             STEP 2:
+            <Card.Title
+              style={{
+                height: "22px",
+                textAlign: "left",
+                fontSize: "20px",
+                letterSpacing: "0px",
+                color: "#155F9B",
+                fontWeight: "600",
+
+                marginBottom: "50px"
+              }}
+            >
+              STEP 2:
           </Card.Title>
-          <div style={{fontSize:"15px",color:"#155F9B",marginLeft:"10px",padding: "3px"}}>Calculate Derived Data Points</div>
+            <div style={{ fontSize: "15px", color: "#155F9B", marginLeft: "10px", padding: "3px" }}>Calculate Derived Data Points</div>
           </Row>
           <Col sm={12}>
-            <div style={{marginBottom:"30px"}}> <h5 style={{color: "#155F9B"}}><button className="btn btn-primary" style={{width: "25%",fontSize:"15px"}} disabled={true}>Calculate derived data</button></h5></div>
+            <div style={{ marginBottom: "50px" }}> <h5 style={{ color: "#155F9B" }}><select style={{height:"35px",margin:"0 5px",width: "25%", fontSize: "15px" }} onChange={this.getCompanyData} className="select">
+              <option>Select Company</option>
+              {this.state.companies.map((company)=>(<option>{company}</option>))}
+              {/*{this.state.companies.map((company) => <option key={company} value={company}>{company}</option>)}*/}
+            </select></h5></div>
+          </Col>
+          <Col sm={12}>
+            <div style={{ marginBottom: "50px" }}> <h5 style={{ color: "#155F9B" }}><button className="btn btn-primary" onClick={this.getCompanyCalculation} style={{ width: "25%", fontSize: "15px", display:"inline-flex", alignItems:"center",justifyContent:"center"}} disabled={this.state.loading? true : this.state.btntype}>
+            {loading && (<div><i className="btn-submit-spinner" style={{ marginRight: "5px" }} /></div>)}
+                {loading && <div>Calculating</div>}
+                {!loading && <div>Calculate Derived Data</div>}
+                </button></h5></div>
             {/* <label>Company Name : {this.state.companyData.companyName }</label>*/}
           </Col>
           {/* <Col sm={4}>
@@ -347,114 +429,137 @@ getAllcompany=()=>{
 
           </Col> */}
         </Row>
-        
 
-        
- <Row style={{marginRight: '0px !important', marginLeft: '0px !important'}}>
-   <Row>
-        <Card.Title
-            style={{
-              height: "22px",
-              textAlign: "left",
-              fontSize: "20px",
-              letterSpacing: "0px",
-              color: "#155F9B",
-              fontWeight: "600",
-              
-              marginBottom:"30px"
-            }}
-          >
-             STEP 3:
+
+
+        <Row style={{ marginRight: '0px !important', marginLeft: '0px !important' }}>
+          <Row>
+            <Card.Title
+              style={{
+                height: "22px",
+                textAlign: "left",
+                fontSize: "20px",
+                letterSpacing: "0px",
+                color: "#155F9B",
+                fontWeight: "600",
+
+                marginBottom: "50px"
+              }}
+            >
+              STEP 3:
           </Card.Title>
-          <div style={{fontSize:"15px",color:"#155F9B",marginLeft:"10px",padding: "3px"}}>Calculate performance unit </div>
+            <div style={{ fontSize: "15px", color: "#155F9B", marginLeft: "10px", padding: "3px" }}>Calculate performance unit </div>
           </Row>
           <Col sm={12}>
-           <div style={{marginBottom:"30px"}}> <h5 style={{color: "#155F9B"}}><button className="btn btn-primary" style={{ width:"25%",fontSize:"15px"}} disabled={true}>Calculate performance unit</button></h5></div> 
-            
+            <div style={{ marginBottom: "50px" }}> <h5 style={{ color: "#155F9B" }}><button className="btn btn-primary" style={{ width: "25%", fontSize: "15px" }} disabled={true}>Calculate performance unit</button></h5></div>
+
           </Col>
         </Row>
 
-        <Row style={{marginRight: '0px !important', marginLeft: '0px !important'}}>
-        <Row>
-        <Card.Title
-            style={{
-              height: "22px",
-              textAlign: "left",
-              fontSize: "20px",
-              letterSpacing: "0px",
-              color: "#155F9B",
-              fontWeight: "600",
-             
-              marginBottom:"30px"
-            }}
-          >
-             STEP 4:
+        <Row style={{ marginRight: '0px !important', marginLeft: '0px !important' }}>
+          <Row>
+            <Card.Title
+              style={{
+                height: "22px",
+                textAlign: "left",
+                fontSize: "20px",
+                letterSpacing: "0px",
+                color: "#155F9B",
+                fontWeight: "600",
+
+                marginBottom: "50px"
+              }}
+            >
+              STEP 4:
           </Card.Title>
-          <div style={{fontSize:"15px",color:"#155F9B",marginLeft:"10px",padding: "3px"}}>Upload Controversies</div>
+            <div style={{ fontSize: "15px", color: "#155F9B", marginLeft: "10px", padding: "3px" }}>Upload Controversies  (optional)</div>
           </Row>
-          <header className="jumbotron" style={{width: "100%"}}>
-          <Card.Title
-            style={{
-              height: "22px",
-              textAlign: "left",
-              fontSize: "12px",
-              letterSpacing: "0px",
-              color: "#155F9B",
-              fontWeight: "600"
-            }}
-          >
-           Upload Controversies
+          <header className="jumbotron" style={{ width: "100%" }}>
+            <Card.Title
+              style={{
+                height: "22px",
+                textAlign: "left",
+                fontSize: "12px",
+                letterSpacing: "0px",
+                color: "#155F9B",
+                fontWeight: "600"
+              }}
+            >
+              Upload Controversies
           </Card.Title>
-          <div>
-            <Row>
-              <Col sm={12}>
-                {/* <Form.File
+            <div>
+              <Row>
+                <Col sm={12}>
+                  {/* <Form.File
                   id="formcheck-api-regular"
                   style={{ width: "459px", height: "83px", fontSize: "12px" }}>
                   <input type="file" className="form-control" id="file" accept={SheetJSFT} onChange={this.handleChange} style={{ top: "322px", left: "406px", width: "459px", 
                   background: "#F0F1F4 0% 0% no-repeat padding-box",border: "1px solid #D4D4D428", borderRadius: "4px", opacity: " 1", height: "auto", }} multiple />
                 </Form.File>  */}
-                    <Fileuploader filenameHandle={this.handleChangeexcel}></Fileuploader>
-              </Col>
-            </Row>
-            <Row>
-      
-              <Col sm={5}  style={{marginTop:"20px"}}>
-               
-                <button className="btn btn-primary" style={{fontSize:"15px"}} onClick={this.sendData}>
-                  Upload
+                  <Fileuploader filenameHandle={this.handleChangeexcel}></Fileuploader>
+                </Col>
+              </Row>
+              <Row>
+
+                <Col sm={5} style={{ marginTop: "20px" }}>
+
+                  <button className="btn btn-primary" style={{ fontSize: "15px" }} onClick={this.sendData}>
+                    Upload
                 </button>
-              </Col>
-            </Row> 
-          </div>
-        </header>
+                </Col>
+              </Row>
+            </div>
+          </header>
         </Row>
-        
 
 
-       
-        <Row style={{marginRight: '0px !important', marginLeft: '0px !important'}}>
+
+
+        <Row style={{ marginRight: '0px !important', marginLeft: '0px !important' }}>
           <Row>
-        <Card.Title
-            style={{
-              height: "22px",
-              textAlign: "left",
-              fontSize: "20px",
-              letterSpacing: "0px",
-              color: "#155F9B",
-              fontWeight: "600",
-             
-              marginBottom:"30px"
-            }}
-          >
-           STEP 5:
+            <Card.Title
+              style={{
+                height: "22px",
+                textAlign: "left",
+                fontSize: "20px",
+                letterSpacing: "0px",
+                color: "#155F9B",
+                fontWeight: "600",
+
+                marginBottom: "50px"
+              }}
+            >
+              STEP 5:
           </Card.Title>
-          <div style={{fontSize:"15px",color:"#155F9B",marginLeft:"10px",padding: "3px"}}>Download Json</div>
+            <div style={{ fontSize: "15px", color: "#155F9B", marginLeft: "10px", padding: "3px" }}>Download Json</div>
           </Row>
           <Col sm={12}>
-          <button type="button" class="btn btn-secondary" style={{width:"16%",padding:"4px",fontSize:"15px"}}>Download Response Unit</button>
-          <button type="button" class="btn btn-secondary" style={{width:"16%",padding:"4px",fontSize:"15px"}}>Download Data json</button>
-            </Col>
+            <button type="button" class="btn btn-secondary btn-json-download"onClick={this.downloadData} style={{ width: "16%", padding: "4px", fontSize: "15px" }}>Download Data Json</button>
+            <button type="button" class="btn btn-secondary" style={{ width: "16%", padding: "4px", fontSize: "15px" }}>Download Controversies</button>
+          </Col>
+        </Row>
+
+        <Row style={{ marginTop:"50px",marginRight: '0px !important', marginLeft: '0px !important' }}>
+          <Row>
+            <Card.Title
+              style={{
+                height: "22px",
+                textAlign: "left",
+                fontSize: "20px",
+                letterSpacing: "0px",
+                color: "#155F9B",
+                fontWeight: "600",
+
+                marginBottom: "50px"
+              }}
+            >
+              STEP 6:
+          </Card.Title>
+            <div style={{ fontSize: "15px", color: "#155F9B", marginLeft: "10px", padding: "3px" }}>View Data</div>
+          </Row>
+          <Col sm={12}>
+            <button type="button" class="btn btn-primary" onClick={()=>{this.props.history.push('/viewdata')}} style={{ width: "16%", padding: "4px", fontSize: "15px" }}>View Data Table</button>
+          </Col>
         </Row>
       </div>
     );

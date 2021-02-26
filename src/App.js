@@ -134,7 +134,8 @@ const onPrevious = () => onChange(step - 1);
                         </div>
                     )}
                 </nav>
-                <Container fluid style={{margin: '60px', width: '95%'}}>
+                <Container fluid style={{margin:"50px 0 50px 0"}}>
+                {/* style={{margin: '60px', width: '95%'}} */}
                     <Row>
                         {/* <Col sm={2}>
                         <div> 

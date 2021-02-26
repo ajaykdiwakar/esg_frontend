@@ -5,7 +5,7 @@ import Upload1 from '../images/upload1.png'
 // import Upload3 from '../assets/images/upload3.png'
 // import Upload4 from '../assets/images/upload4.png'
 import './IndexView.css'
-import View1 from '../images/view1.jpg'
+import View1 from '../images/view1.png'
 import  { Redirect } from 'react-router-dom'
 class IndexView extends React.Component {
     constructor(props) {
@@ -20,18 +20,10 @@ class IndexView extends React.Component {
   render() {
     return (
         
-        <div className="container" 
-        style={{
-            width: "100%",
-            display:"inline-block",
-            marginLeft:"70px"
-        }}>
-        <div className="row" style={{
-            float:"left",
-            width: "100%"
-        }}>
-            <div className="col-lg-6" style={{float: "left"}}>
-                <div className="card card_effect" style={{display:"flex",alignItems:"center",backgroundColor:"white",padding:"20px",width: "80%"}} onClick={this.handlefileupload}>
+        <div className="container" >
+        <div className="row">
+            <div className="col-lg-6" style={{alignItems:"center",justifyContent:"center",display:"flex"}}>
+                <div className="card card_effect" style={{display:"flex",alignItems:"center",backgroundColor:"white"}} onClick={this.handlefileupload}>
                     <div className="content_pic" >
                        <img src={Upload1} height="180"></img>
                     </div>
@@ -43,10 +35,10 @@ class IndexView extends React.Component {
             </div>
 
 
-            <div className="col-lg-6" style={{float: "left"}}>
+            <div className="col-lg-6" style={{alignItems:"center",justifyContent:"center",display:"flex"}}>
             
             
-                <div className="card card_effect"   style={{display:"flex",alignItems:"center",backgroundColor:"white",padding: "20px",width: "80%"}} onClick={this.handleviewdata}>
+                <div className="card card_effect"   style={{display:"flex",alignItems:"center",backgroundColor:"white"}} onClick={this.handleviewdata}>
                 <div className="content_pic" >
                        <img src={View1} style={{height: "180px"}}></img>
                     </div>
