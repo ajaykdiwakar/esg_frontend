@@ -69,7 +69,10 @@ class FileUpload extends React.Component {
       companyData: {},
       companyName: [],
       btntype:true,
+      percentilebtntype:true,
       loading:false,
+      percentileloading:false,
+      
 
     };
     this.sendData = this.sendData.bind(this);
@@ -119,13 +122,14 @@ class FileUpload extends React.Component {
   //   });
   //   document.getElementById("fileUploadNames").style.display="block";
   // }
+  
   getAllcompany = () => {
-    fetch("localhost:3019/getAllCompany", {
+    fetch("http://e9a23f17e1e4.ngrok.io/getAllCompany", {
       method: "GET"
     })
       .then((response) => response.json())
       .then((data) => {
-
+       
         console.log("Success:", data);
         this.setState({
           companies: data.data
@@ -150,7 +154,7 @@ class FileUpload extends React.Component {
     }
     console.log(data);
 
-    fetch("localhost:3019/taxonomy ", {
+    fetch("http://e9a23f17e1e4.ngrok.io/taxonomy ", {
       method: "POST",
       body: data,
       
@@ -173,6 +177,43 @@ class FileUpload extends React.Component {
       }
 
   }
+  getjsondata =()=>{
+    let companyname=this.state.companyName;
+    let url = `http://e9a23f17e1e4.ngrok.io/getNewData/${companyname}`;
+    fetch(url, {
+      method: "GET"
+    })
+    .then((response) => response.json())
+    .then((data) => {
+  
+      console.log("Success:", data);
+
+     
+      this.setState({
+        companyData: data
+      })
+      let jsonarray = [];
+      for (let arr of this.state.companyData.data.fiscalYear) {
+        for (let arrOne of arr) {
+          for (let arrTwo of arrOne.Data) {
+            // console.log(arrTwo);
+            jsonarray.push(arrTwo)
+          }
+          // console.log(arrOne.Data);
+        }
+
+      }
+      this.setState({ finalArray: jsonarray });
+      console.log("JSON LIST", this.state.finalArray)
+    })
+    .catch((error) => {
+
+      console.error("Error:", error);
+      
+    });
+}
+
+  
   getCompanyData(e) {
 
     if (e.target.value == "Select Company") {
@@ -187,7 +228,7 @@ class FileUpload extends React.Component {
         companyName: e.target.value
       }
   
-      let url = `localhost:3019/${companyName}`;
+      let url = `http://e9a23f17e1e4.ngrok.io/getNewData/${companyName}`;
   
       fetch(url, {
         method: "GET"
@@ -197,10 +238,7 @@ class FileUpload extends React.Component {
   
           console.log("Success:", data);
 
-          let jsonDownload = document.querySelector(".btn-json-download");
-          if(jsonDownload){
-            jsonDownload.disabled = false;
-          }
+         
           this.setState({
             companyData: data
           })
@@ -221,7 +259,7 @@ class FileUpload extends React.Component {
         .catch((error) => {
   
           console.error("Error:", error);
-          alert(error.message)
+          
         });
     }
   }
@@ -233,7 +271,7 @@ class FileUpload extends React.Component {
     this.setState({
       loading:true
     })
-    let url = `localhost:3019/calculation/${companyName}`;
+    let url = `http://e9a23f17e1e4.ngrok.io/calculation/${companyName}`;
 
     fetch(url, {
       method: "POST",
@@ -241,16 +279,14 @@ class FileUpload extends React.Component {
     })
       .then((response) => response.json())
       .then((data) => {
-
+       
         console.log("Success:", data);
         alert("Calculation Completed Successfully");
         this.setState({
-          loading:false
+          loading:false,
+          percentilebtntype:false
         })
-        // this.setState({
-        //   companyData: data
-        // })
-        //  alert(data.message)
+        
       })
       .catch((error) => {
         this.setState({
@@ -262,9 +298,48 @@ class FileUpload extends React.Component {
 
   }
 
+  getPercentileCalculation =()=>{
+   let nameofcompany=this.state.selectedCompany;
+    this.setState({
+      percentileloading:true
+    })
+    
+      
+      let url = `http://e9a23f17e1e4.ngrok.io/percentile/${nameofcompany}`;
+
+      fetch(url, {
+        method: "POST",
+        
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        let jsonDownload = document.querySelector(".btn-json-download");
+        if(jsonDownload){
+          jsonDownload.disabled = false;
+        }
+        console.log("percentileSuccess:", data);
+        alert("Percentile Calculation Completed Successfully");
+        this.setState({
+          percentileloading:false
+        })
+       
+      })
+      .catch((error) => {
+        this.setState({
+          percentileloading:false
+        })
+        
+        alert(error.message)
+      });
+    }
+  
+     
+
   downloadData = () => {
+    this.getjsondata()
+    console.log(this.state.companyData,"company data")
     const { companyData } = this.state
-    const fileName = 'Data.json';
+    const fileName = this.state.selectedCompany+".json";
     // Create a blob of the data
     const fileToSave = new Blob([JSON.stringify(companyData)], {
     type: 'text/plain;charset=utf-8',
@@ -273,27 +348,11 @@ class FileUpload extends React.Component {
     // Save the file
     saveAs(fileToSave, fileName);
   }
-
+  
   render() {
     let loading = this.state.loading;
-    const columns = [{
-      Header: 'Year',
-      accessor: 'Year',
-    }
-      , {
-      Header: 'DPCode',
-      accessor: 'DPCode',
-    }
-
-      , {
-      Header: 'Response',
-      accessor: 'Response',
-    }
-      , {
-      Header: 'unit',
-      accessor: 'unit',
-    }
-    ]
+    let percentile_loader =this.state.percentileloading;
+    
 
     const FileNameinfo = (arg) => {
       let filenames = arg.data;
@@ -451,8 +510,13 @@ class FileUpload extends React.Component {
             <div style={{ fontSize: "15px", color: "#155F9B", marginLeft: "10px", padding: "3px" }}>Calculate performance unit </div>
           </Row>
           <Col sm={12}>
-            <div style={{ marginBottom: "50px" }}> <h5 style={{ color: "#155F9B" }}><button className="btn btn-primary" style={{ width: "25%", fontSize: "15px" }} disabled={true}>Calculate performance unit</button></h5></div>
-
+            <div style={{ marginBottom: "50px" }}> <h5 style={{ color: "#155F9B" }}><button className="btn btn-primary" style={{ width: "25%", fontSize: "15px", display:"inline-flex", alignItems:"center",justifyContent:"center" }} onClick={this.getPercentileCalculation} disabled={this.state.percentile_loader? true : this.state.percentilebtntype}>
+            {percentile_loader && (<div><i className="btn-submit-spinner" style={{ marginRight: "5px" }} /></div>)}
+                {percentile_loader && <div>Calculating</div>}
+                {!percentile_loader && <div>Calculate performance unit</div>} 
+              
+              </button></h5></div>
+           
           </Col>
         </Row>
 

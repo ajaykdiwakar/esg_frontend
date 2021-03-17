@@ -25,7 +25,7 @@ class ViewData extends React.Component {
       
     }
     getAllcompany = () => {
-      fetch("localhost:3019/getAllCompany", {
+      fetch("http://e9a23f17e1e4.ngrok.io/getAllCompany", {
         method: "GET"
       })
         .then((response) => response.json())
@@ -58,7 +58,7 @@ class ViewData extends React.Component {
           companyName: e.target.value
         }
     
-        let url = `localhost:3019/getNewData/${companyName}`;
+        let url = `http://e9a23f17e1e4.ngrok.io/getNewData/${companyName}`;
     
         fetch(url, {
           method: "GET"
@@ -101,19 +101,14 @@ class ViewData extends React.Component {
        ,{  
         Header: 'DPCode',  
         accessor: 'DPCode' ,
-        }
-       
-       ,{  
-       Header: 'Response',  
-       accessor: 'Response' ,
-       }
+        }  
        ,{  
        Header: 'Response Unit',  
-       accessor: 'ResponseUnit',
+       accessor: 'Response',
        },
        {  
         Header: 'Performance Unit',  
-        accessor: 'PerformanceUnit',
+        accessor: 'PerformanceResponse',
         }
     ]
     return (
