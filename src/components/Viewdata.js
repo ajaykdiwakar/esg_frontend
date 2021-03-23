@@ -25,7 +25,7 @@ class ViewData extends React.Component {
       
     }
     getAllcompany = () => {
-      fetch("localhost:3019/getAllCompany", {
+      fetch("http://localhost:3019/getAllCompany", {
         method: "GET"
       })
         .then((response) => response.json())
@@ -58,7 +58,7 @@ class ViewData extends React.Component {
           companyName: e.target.value
         }
     
-        let url = `localhost:3019/getNewData/${companyName}`;
+        let url = `http://localhost:3019/getNewData/${companyName}`;
     
         fetch(url, {
           method: "GET"

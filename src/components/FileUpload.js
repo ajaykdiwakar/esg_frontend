@@ -133,7 +133,7 @@ class FileUpload extends React.Component {
   // }
   
   getAllcompany = () => {
-    fetch("localhost:3019/getAllCompany", {
+    fetch("http://localhost:3019/getAllCompany", {
       method: "GET"
     })
       .then((response) => response.json())
@@ -163,7 +163,7 @@ class FileUpload extends React.Component {
     }
     console.log(data);
 
-    fetch("localhost:3019/taxonomy ", {
+    fetch("http://localhost:3019/taxonomy ", {
       method: "POST",
       body: data,
       
@@ -197,7 +197,7 @@ class FileUpload extends React.Component {
   getjsondata =()=>{
     
     let companyname=this.state.selectedCompany;
-    let url = `localhost:3019/getNewData/${companyname}`;
+    let url = `http://localhost:3019/getNewData/${companyname}`;
     fetch(url, {
       method: "GET"
     })
@@ -252,7 +252,7 @@ class FileUpload extends React.Component {
         companyName: e.target.value
       }
   
-      let url = `localhost:3019/getNewData/${companyName}`;
+      let url = `http://localhost:3019/getNewData/${companyName}`;
   
       fetch(url, {
         method: "GET"
@@ -295,7 +295,7 @@ class FileUpload extends React.Component {
     this.setState({
       loading:true
     })
-    let url = `localhost:3019/calculation/${companyName}`;
+    let url = `http://localhost:3019/calculation/${companyName}`;
 
     fetch(url, {
       method: "POST",
@@ -329,7 +329,7 @@ class FileUpload extends React.Component {
     })
     
       
-      let url = `localhost:3019/percentile/${nameofcompany}`;
+      let url = `http://localhost:3019/percentile/${nameofcompany}`;
 
       fetch(url, {
         method: "POST",
