@@ -25,7 +25,7 @@ class ViewData extends React.Component {
       
     }
     getAllcompany = () => {
-      fetch("http://e9a23f17e1e4.ngrok.io/getAllCompany", {
+      fetch("localhost:3019/getAllCompany", {
         method: "GET"
       })
         .then((response) => response.json())
@@ -58,7 +58,7 @@ class ViewData extends React.Component {
           companyName: e.target.value
         }
     
-        let url = `http://e9a23f17e1e4.ngrok.io/getNewData/${companyName}`;
+        let url = `localhost:3019/getNewData/${companyName}`;
     
         fetch(url, {
           method: "GET"
@@ -125,7 +125,7 @@ class ViewData extends React.Component {
               marginBottom:"50px"
             }}
           >
-           <div style={{position:"absolute",left: "9%"}}><button className="btn btn-secondary" style={{width: "100%",fontSize:"15px"}} onClick={()=>{this.props.history.push('/fileUpload')}}>Back to Upload data page</button></div> <div>View Data</div>
+           <div style={{position:"absolute",left: "9%"}}><button className="btn btn-secondary" style={{width: "100%",fontSize:"15px"}} onClick={()=>{this.props.history.push('/IndexView')}}>Back to home page</button></div> <div>View Data</div>
               
           </Card.Title>
           <header className="jumbotron">

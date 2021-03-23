@@ -93,6 +93,8 @@ class FileUpload extends React.Component {
   }
   // file json structure has been changed since we used plugin
   handleChangeexcel = (e) => {
+    console.log(e,"excels")
+    if (!isNullOrUndefined(e.file)){
     console.log(e.file, "e")
     let namearray = [];
     let selectfilename = e.file;
@@ -104,6 +106,13 @@ class FileUpload extends React.Component {
       companyName: namearray
     })
     console.log(this.state.selectedFile, "filesupload");
+  }
+  else{
+    this.setState({
+      selectedFile: e.files,
+    })
+    alert("file deleted");
+  }
   }
 
   // handleChange(e) {
@@ -124,7 +133,7 @@ class FileUpload extends React.Component {
   // }
   
   getAllcompany = () => {
-    fetch("http://e9a23f17e1e4.ngrok.io/getAllCompany", {
+    fetch("localhost:3019/getAllCompany", {
       method: "GET"
     })
       .then((response) => response.json())
@@ -147,14 +156,14 @@ class FileUpload extends React.Component {
     e.preventDefault();
     var input = document.getElementById('file');
     const data = new FormData();
-    console.log(this.state.selectedFile);
+    console.log(this.state.selectedFile,"**");
     if(this.state.selectedFile && this.state.selectedFile.length > 0){
     for (var x = 0; x < this.state.selectedFile.length; x++) {
       data.append("file", this.state.selectedFile[x]);
     }
     console.log(data);
 
-    fetch("http://e9a23f17e1e4.ngrok.io/taxonomy ", {
+    fetch("localhost:3019/taxonomy ", {
       method: "POST",
       body: data,
       
@@ -162,6 +171,14 @@ class FileUpload extends React.Component {
       .then((response) => response.json())
       .then((data) => {
         if (data.status === 200) {
+          let jsonDownload = document.querySelector(".btn-json-download");
+          if(jsonDownload){
+            jsonDownload.disabled = true;
+          }
+          this.setState({
+            btntype:true,
+            percentilebtntype:true,
+          })
           this.getAllcompany()
           console.log("Success:", data);
           alert(data.message)
@@ -178,19 +195,26 @@ class FileUpload extends React.Component {
 
   }
   getjsondata =()=>{
-    let companyname=this.state.companyName;
-    let url = `http://e9a23f17e1e4.ngrok.io/getNewData/${companyname}`;
+    
+    let companyname=this.state.selectedCompany;
+    let url = `localhost:3019/getNewData/${companyname}`;
     fetch(url, {
       method: "GET"
     })
     .then((response) => response.json())
     .then((data) => {
-  
+     
+      alert("Percentile Calculation Completed Successfully");
+      let jsonDownload = document.querySelector(".btn-json-download");
+      if(jsonDownload){
+        jsonDownload.disabled = false;
+      }
       console.log("Success:", data);
 
      
       this.setState({
-        companyData: data
+        companyData: data,
+        percentileloading:false
       })
       let jsonarray = [];
       for (let arr of this.state.companyData.data.fiscalYear) {
@@ -228,7 +252,7 @@ class FileUpload extends React.Component {
         companyName: e.target.value
       }
   
-      let url = `http://e9a23f17e1e4.ngrok.io/getNewData/${companyName}`;
+      let url = `localhost:3019/getNewData/${companyName}`;
   
       fetch(url, {
         method: "GET"
@@ -271,7 +295,7 @@ class FileUpload extends React.Component {
     this.setState({
       loading:true
     })
-    let url = `http://e9a23f17e1e4.ngrok.io/calculation/${companyName}`;
+    let url = `localhost:3019/calculation/${companyName}`;
 
     fetch(url, {
       method: "POST",
@@ -305,7 +329,7 @@ class FileUpload extends React.Component {
     })
     
       
-      let url = `http://e9a23f17e1e4.ngrok.io/percentile/${nameofcompany}`;
+      let url = `localhost:3019/percentile/${nameofcompany}`;
 
       fetch(url, {
         method: "POST",
@@ -313,15 +337,10 @@ class FileUpload extends React.Component {
       })
       .then((response) => response.json())
       .then((data) => {
-        let jsonDownload = document.querySelector(".btn-json-download");
-        if(jsonDownload){
-          jsonDownload.disabled = false;
-        }
+        this.getjsondata();
         console.log("percentileSuccess:", data);
-        alert("Percentile Calculation Completed Successfully");
-        this.setState({
-          percentileloading:false
-        })
+        
+        
        
       })
       .catch((error) => {
@@ -336,7 +355,7 @@ class FileUpload extends React.Component {
      
 
   downloadData = () => {
-    this.getjsondata()
+    
     console.log(this.state.companyData,"company data")
     const { companyData } = this.state
     const fileName = this.state.selectedCompany+".json";
@@ -464,7 +483,7 @@ class FileUpload extends React.Component {
           <Col sm={12}>
             <div style={{ marginBottom: "50px" }}> <h5 style={{ color: "#155F9B" }}><select style={{height:"35px",margin:"0 5px",width: "25%", fontSize: "15px" }} onChange={this.getCompanyData} className="select">
               <option>Select Company</option>
-              {this.state.companies.map((company)=>(<option>{company}</option>))}
+              { !isNullOrUndefined(this.state.companies)?this.state.companies.map((company)=>(<option>{company}</option>)):alert("no data")}
               {/*{this.state.companies.map((company) => <option key={company} value={company}>{company}</option>)}*/}
             </select></h5></div>
           </Col>
