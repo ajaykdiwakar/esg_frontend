@@ -159,9 +159,12 @@ class FileUpload extends React.Component {
     console.log(this.state.selectedFile,"**");
     if(this.state.selectedFile && this.state.selectedFile.length > 0){
     for (var x = 0; x < this.state.selectedFile.length; x++) {
-      data.append("file", this.state.selectedFile[x]);
+      data.append("file", this.state.selectedFile[x].rawFile);
     }
-    console.log(data);
+    //console.log(data.getAll('file'),"oooooo");
+    for (var value of data.values()) {
+      console.log(value,"checking values of formdata");
+   }
 
     fetch("http://13.234.131.197:3019/taxonomy ", {
       method: "POST",

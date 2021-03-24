@@ -46,7 +46,7 @@ class ViewData extends React.Component {
     
     getViewCompanyData=(e)=>{
 
-      if (e.target.value == "Select Company") {
+      if (e.target.value === "Select Company") {
         alert("Please Select companies to view data")
       } else {
   
