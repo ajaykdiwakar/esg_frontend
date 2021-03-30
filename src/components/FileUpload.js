@@ -644,7 +644,7 @@ class FileUpload extends React.Component {
           </Row>
           <Col sm={12}>
             <button type="button" class="btn btn-secondary btn-json-download" onClick={this.downloadData} style={{ width: "20%", height: "40px",padding: "4px", fontSize: "2vh",marginBottom:"20px" }}>Download Data Json</button>
-            <button type="button" class="btn btn-success btn-excel-download" onClick={this.downloadExcel} style={{ width: "25%",height: "40px", padding: "4px", fontSize: "2vh",marginBottom:"20px" }} >Download Data json as excels</button>
+            <button type="button" class="btn btn-success btn-excel-download" onClick={this.downloadExcel} style={{ width: "25%",height: "40px", padding: "4px", fontSize: "2vh",marginBottom:"20px" }} >Download Data json as excel</button>
             <div>
                        <CSVLink 
                        data={this.state.finalArray} 
