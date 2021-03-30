@@ -4,6 +4,7 @@ import { isNullOrUndefined } from "@syncfusion/ej2-base";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { toast } from "react-toastify";
+import { CSVLink } from "react-csv";
 
 import UserService from "../services/user.service";
 import XLSX from "xlsx";
@@ -53,11 +54,12 @@ const SheetJSFT = [
 
 class FileUpload extends React.Component {
 
-
+ 
   fileObj = [];
   fileArray = [];
 
   constructor(props) {
+    
     super(props);
     this.state = {
       file: [null],
@@ -72,9 +74,11 @@ class FileUpload extends React.Component {
       percentilebtntype:true,
       loading:false,
       percentileloading:false,
-      
+      finalArray: [],
 
     };
+    // eslint-disable-next-line no-unused-expressions
+    this.exceldownload;
     this.sendData = this.sendData.bind(this);
     // this.handleChange = this.handleChange.bind(this);
     this.getCompanyData = this.getCompanyData.bind(this);
@@ -89,6 +93,11 @@ class FileUpload extends React.Component {
           if(jsonDownload){
             jsonDownload.disabled = true;
           }
+          let excel_Download = document.querySelector(".btn-excel-download");
+          if(excel_Download){
+            excel_Download.disabled = true;
+          }      
+          
 
   }
   // file json structure has been changed since we used plugin
@@ -178,6 +187,11 @@ class FileUpload extends React.Component {
           if(jsonDownload){
             jsonDownload.disabled = true;
           }
+          let excel_Download = document.querySelector(".btn-excel-download");
+          if(excel_Download){
+            excel_Download.disabled = true;
+          }
+          
           this.setState({
             btntype:true,
             percentilebtntype:true,
@@ -212,6 +226,11 @@ class FileUpload extends React.Component {
       if(jsonDownload){
         jsonDownload.disabled = false;
       }
+      let excel_Download = document.querySelector(".btn-excel-download");
+      if(excel_Download){
+        excel_Download.disabled = false;
+      }
+      
       console.log("Success:", data);
 
      
@@ -243,7 +262,7 @@ class FileUpload extends React.Component {
   
   getCompanyData(e) {
 
-    if (e.target.value == "Select Company") {
+    if (e.target.value === "Select Company") {
       alert("Please Select companies to view data")
     } else {
 
@@ -370,8 +389,12 @@ class FileUpload extends React.Component {
     // Save the file
     saveAs(fileToSave, fileName);
   }
+  downloadExcel=()=>{
+    this.exceldownload.link.click();
+  }
   
   render() {
+    const fileName_excel = this.state.selectedCompany+".CSV";
     let loading = this.state.loading;
     let percentile_loader =this.state.percentileloading;
     
@@ -620,8 +643,17 @@ class FileUpload extends React.Component {
             <div style={{ fontSize: "15px", color: "#155F9B", marginLeft: "10px", padding: "3px" }}>Download Json</div>
           </Row>
           <Col sm={12}>
-            <button type="button" class="btn btn-secondary btn-json-download"onClick={this.downloadData} style={{ width: "16%", padding: "4px", fontSize: "15px" }}>Download Data Json</button>
-            <button type="button" class="btn btn-secondary" style={{ width: "16%", padding: "4px", fontSize: "15px" }}>Download Controversies</button>
+            <button type="button" class="btn btn-secondary btn-json-download" onClick={this.downloadData} style={{ width: "20%", height: "40px",padding: "4px", fontSize: "2vh",marginBottom:"20px" }}>Download Data Json</button>
+            <button type="button" class="btn btn-success btn-excel-download" onClick={this.downloadExcel} style={{ width: "25%",height: "40px", padding: "4px", fontSize: "2vh",marginBottom:"20px" }} >Download Data json as excels</button>
+            <div>
+                       <CSVLink 
+                       data={this.state.finalArray} 
+                        filename={fileName_excel}
+                        className="hidden"
+                        ref={(r) => this.exceldownload = r}
+                        target="_blank"/>
+                        </div>
+            <button type="button" class="btn btn-secondary" style={{ width: "20%",height: "40px", padding: "4px", fontSize: "2vh" }} disabled={true}>Download Controversies</button>
           </Col>
         </Row>
 

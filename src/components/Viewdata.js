@@ -9,6 +9,7 @@ import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import ReactTable from "react-table"; 
 import { toast } from "react-toastify";
+
 class ViewData extends React.Component {
     constructor(props) {
         super(props);
