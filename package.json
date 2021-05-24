@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@ant-design/icons": "^4.6.2",
     "@ramonak/react-excel": "^1.0.1",
     "@syncfusion/ej2-base": "^18.4.44",
     "@syncfusion/ej2-react-inputs": "^18.4.47",
@@ -18,7 +17,6 @@
     "file-saver": "^2.0.5",
     "form-data": "^3.0.0",
     "jquery": "^3.5.1",
-    "multiselect-react-dropdown": "^1.6.11",
     "react": "^16.13.1",
     "react-bootstrap": "^1.4.3",
     "react-csv": "^2.0.3",

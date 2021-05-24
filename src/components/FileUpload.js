@@ -1,15 +1,23 @@
 
 import React, { useState, useEffect } from "react";
 import { isNullOrUndefined } from "@syncfusion/ej2-base";
-import { Col, Row, Card, Button, Container } from 'react-bootstrap';
-import { toast } from "react-toastify";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 import { CSVLink } from "react-csv";
 import Fileuploader from './FileUploader.tsx';
 import './FileUpload.css';
+import { saveAs } from 'file-saver';
+
+
+ import { Container } from 'react-bootstrap';
+//import { toast } from "react-toastify";
+// import { CSVLink } from "react-csv";
+// import Fileuploader from './FileUploader.tsx';
+// import './FileUpload.css';
 import Select from 'react-select';
 import { Spin, Space  } from 'antd';
 import 'antd/dist/antd.css';
-import { saveAs } from 'file-saver';
+// import { saveAs } from 'file-saver';
 
 const SheetJSFT = [
   "xlsx",
@@ -118,7 +126,8 @@ class FileUpload extends React.Component {
       
       .then((data) => {
         console.log(data.message, 'message');
-        if (data.message === "Files upload success") {
+        if (data.message === "Files uploaded successfully") {
+          alert(data.message);
           let jsonDownload = document.querySelector(".btn-json-download");
           if(jsonDownload){
             jsonDownload.disabled = true;
@@ -133,7 +142,7 @@ class FileUpload extends React.Component {
             percentilebtntype:true,
             spinner:false
           })
-          this.getAllcompany()
+          // this.getAllcompany()
           console.log("Success:", data);
         }
       })

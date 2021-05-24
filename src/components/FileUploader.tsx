@@ -1,8 +1,7 @@
 import { createElement } from '@syncfusion/ej2-base';
 import { UploaderComponent } from '@syncfusion/ej2-react-inputs';
 import * as React from 'react';
-import ReactTable from "react-table";
-import 'react-table/react-table.css'
+
 
 
 
@@ -12,7 +11,7 @@ export default class fileUploader extends React.Component<any, any> {
   public clearEle: HTMLElement = createElement('span', { className: 'remove e-icons', innerHTML : 'Clear All' });
   public path: object = {
       removeUrl: 'https://ej2.syncfusion.com/services/api/uploadbox/Remove',
-      saveUrl: 'https://ej2.syncfusion.com/services/api/uploadbox/Save'
+      saveUrl: 'https://ej2.syncfusion.com/services/api/uploadbox/Save',
   }
   private dropAreaRef:any= HTMLElement;
   public onCreated(): void {
