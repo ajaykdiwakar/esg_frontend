@@ -114,21 +114,14 @@ class ViewData extends React.Component {
     ]
     return (
       <div className="container">
-            <Card.Title
-            style={{
-              height: "22px",
-              fontSize: "25px",
-              letterSpacing: "0px",
-              color: "#155F9B",
-              fontWeight: "600",
-              display:"flex",
-              justifyContent: "center",
-              marginBottom:"50px"
-            }}
-          >
-           <div style={{position:"absolute",left: "9%"}}><button className="btn btn-secondary" style={{width: "100%",fontSize:"15px"}} onClick={()=>{this.props.history.push('/IndexView')}}>Back to home page</button></div> <div>View Data</div>
+            
+           <div style={{display:'flex', justifyContent:'space-between'}}>
+               <div><button className="btn btn-secondary" style={{padding:'0px',fontSize:"15px",margin:'0px',minWidth:'10rem'}} onClick={()=>{this.props.history.push('/IndexView')}}>Back to home page</button></div>
+              <div style={{fontSize:'16px', color:'gray'}}>View Data</div>
+              <div style={{paddingRight:'6%'}}></div>
+            </div>  
               
-          </Card.Title>
+          
           <header className="jumbotron">
               
               <Row>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Router, Switch, Route, Link } from "react-router-dom";
 
+
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
@@ -14,7 +15,8 @@ import Home from "./components/Home";
 import Profile from "./components/Profile";
 import FileUpload from "./components/FileUpload";
 import IndexView from './components/IndexView';
-import Viewdata from './components/Viewdata'
+import Viewdata from './components/Viewdata';
+
 
 
 import { logout } from "./actions/auth";
@@ -134,9 +136,9 @@ const onPrevious = () => onChange(step - 1);
                         </div>
                     )}
                 </nav>
-                <Container fluid style={{margin:"50px 0 50px 0"}}>
+                <Container fluid style={{padding: '6% 0% 6% 0%', background:'#efefef'}}>
                 {/* style={{margin: '60px', width: '95%'}} */}
-                    <Row>
+                
                         {/* <Col sm={2}>
                         <div> 
                              <Steps vertical current={step}>
@@ -160,7 +162,7 @@ const onPrevious = () => onChange(step - 1);
                             </ButtonGroup> 
                         </div>
                         </Col> */}
-                        <Col sm={12}>
+                        
                             <Switch>
                             <Route exact path={["/", "/login"]} component={Login} />
                             <Route exact path="/home" component={Home} />
@@ -173,8 +175,8 @@ const onPrevious = () => onChange(step - 1);
                             
                             {/* <Route path="/user" component={BoardUser} /> */}
                             </Switch>
-                        </Col>
-                    </Row>
+                      
+                    
                 </Container>
             </div>
         </Route>
