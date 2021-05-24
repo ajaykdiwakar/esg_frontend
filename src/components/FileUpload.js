@@ -126,7 +126,7 @@ class FileUpload extends React.Component {
       
       .then((data) => {
         console.log(data.message, 'message');
-        if (data.message === "Files uploaded successfully") {
+        if (data.message === "Files upload success") {
           alert(data.message);
           let jsonDownload = document.querySelector(".btn-json-download");
           if(jsonDownload){
