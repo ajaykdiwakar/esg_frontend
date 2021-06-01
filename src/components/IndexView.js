@@ -22,8 +22,8 @@ class IndexView extends React.Component {
         
         <div className="container" >
         <div className="row">
-            <div className="col-lg-6" style={{alignItems:"center",justifyContent:"center",display:"flex"}}>
-                <div className="card card_effect" style={{display:"flex",alignItems:"center",backgroundColor:"white"}} onClick={this.handlefileupload}>
+            <div className="col-lg-12" style={{alignItems:"center",justifyContent:"center",display:"flex"}}>
+                <div className="card card_effect" style={{display:"flex",alignItems:"center",backgroundColor:"white", width:'40%'}} onClick={this.handlefileupload}>
                     <div className="content_pic" >
                        <img src={Upload1} height="180"></img>
                     </div>
@@ -35,7 +35,7 @@ class IndexView extends React.Component {
             </div>
 
 
-            <div className="col-lg-6" style={{alignItems:"center",justifyContent:"center",display:"flex"}}>
+            {/* <div className="col-lg-6" style={{alignItems:"center",justifyContent:"center",display:"flex"}}>
             
             
                 <div className="card card_effect"   style={{display:"flex",alignItems:"center",backgroundColor:"white"}} onClick={this.handleviewdata}>
@@ -49,7 +49,7 @@ class IndexView extends React.Component {
                     
                 </div>
 
-            </div>
+            </div> */}
 
         </div>
 

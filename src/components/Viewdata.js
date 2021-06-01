@@ -8,6 +8,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import ReactTable from "react-table"; 
+import "react-table/react-table.css";
 import { toast } from "react-toastify";
 
 class ViewData extends React.Component {

@@ -35,7 +35,7 @@ export default class fileUploader extends React.Component<any, any> {
                     {/* Render Uploader */}
                     <UploaderComponent id='fileUpload' type='file' ref = {upload => {this.uploadObj = upload !}}
                     asyncSettings = {this.path}
-                autoUpload={false}  actionComplete={this.props.filenameHandle} buttons={ { browse: 'Choose file', clear: this.clearEle, upload: this.uploadEle }}  created={this.onCreated = this.onCreated.bind(this)}/>
+                autoUpload={false} allowedExtensions='.xls, .xlsx' actionComplete={this.props.filenameHandle} buttons={ { browse: 'Choose file', clear: this.clearEle, upload: this.uploadEle }}  created={this.onCreated = this.onCreated.bind(this)}/>
                 </div>
                 </div>
                 </div>

@@ -15,3 +15,18 @@
   @-webkit-keyframes spin {
     to { -webkit-transform: rotate(360deg); }
   }
+  .ant-spin-nested-loading{
+    width:100% !important;
+  }
+ .ant-message-success{
+    display: flex;
+    align-items: center;
+  }
+  .ant-message-warning{
+    display: flex;
+    align-items: center;
+  }
+  .ant-message-error{
+    display: flex;
+    align-items: center;
+  }
