@@ -222,14 +222,13 @@ class FileUpload extends React.Component {
             this.success();
             this.getAllcompany();
             console.log("Success:", data);
-        }
-        if(data.message ==="Found invalid date format in undefined, please correct and try again!"){
+        }else{
           this.setState({
-            spinner:false
-          })
+                   spinner:false
+                 });
           message.warning(data.message);
         }
-      })
+       })
       .catch((error) => {
 
         this.setState({
@@ -277,14 +276,53 @@ class FileUpload extends React.Component {
         selectedCompany: dropdowncompany,
         btntype : false
       })
+      const token= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTI1MTBlMzU2ZDM2NjYwNWIwNDUzMyIsImlhdCI6MTYyMTY5MDQyMX0.52MKXMLD-A_QZxImaut5fpKFJ7MQQZB-so1ws5gVi0Q";
+    let url ='http://65.1.140.116:9010/derived_datapoints/generate-json/'+dropdowncompany.value+'?access_token='+token;
+    fetch(url, {
+      method: "GET"
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      let jsonDownload = document.querySelector(".btn-json-download");
+      if(jsonDownload){
+        jsonDownload.disabled = false;
+      }
+      let excel_Download = document.querySelector(".btn-excel-download");
+      if(excel_Download){
+        excel_Download.disabled = false;
+      }
+      
+      console.log("get data Success:", data);
+      const year1 =data.year1;
+      const year2 =data.year2;
+      const mod_year1 = year1;
+      const mod_year2= year2;
+      const firstyear= year1 && year1[0].year;
+      const secyear= year2 && year2[0].year;
+      const modifiedjsondata =[{ year:year1[0].year, Data:year1}, {year:year2[0].year, Data:year2}]
+     console.log(modifiedjsondata, 'modifiedjsondata');
+      this.setState({
+        companyData: modifiedjsondata,
+        mod_year1:mod_year1,
+        mod_year2:mod_year2,
+        firstyear:firstyear,
+        secyear:secyear,
+        percentileloading:false
+      })
+    })
+    .catch((error) => {
+
+      console.error("Error:", error);
+      
+    });
   }
   getjsondata =()=>{
     
     const companyname=this.state.selectedCompany.value;
-    const val= "60b0e311b09656fa36da9fbe";
+    
     console.log(companyname, 'companyname get json');
     const token= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTI1MTBlMzU2ZDM2NjYwNWIwNDUzMyIsImlhdCI6MTYyMTY5MDQyMX0.52MKXMLD-A_QZxImaut5fpKFJ7MQQZB-so1ws5gVi0Q";
-    let url ='http://65.1.140.116:9010/derived_datapoints/generate-json/'+val+'?access_token='+token;
+    let url ='http://65.1.140.116:9010/derived_datapoints/generate-json/'+companyname+'?access_token='+token;
     fetch(url, {
       method: "GET"
     })
