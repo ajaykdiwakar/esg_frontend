@@ -83,7 +83,7 @@ class FileUpload extends React.Component {
     message.success({
       content: 'File Uploaded Successfully',
       className: 'custom-class',
-     // duration:13467456,
+      duration:6,
       style: {
         marginTop: '6vh',
       },
@@ -133,11 +133,11 @@ class FileUpload extends React.Component {
         .catch((error) => {
           this.setState({controversyspinner:false,});
           console.error("Error:", error);
-          message.error(error.message)
+          message.error(error.message,5)
         });
     }
       else{
-        message.warning("Please Attach Aleast One File");
+        message.warning("Please Attach Aleast One File",5);
       }
 
 // end
@@ -226,7 +226,7 @@ class FileUpload extends React.Component {
           this.setState({
                    spinner:false
                  });
-          message.warning(data.message);
+          message.warning(data.message,10);
         }
        })
       .catch((error) => {
@@ -237,7 +237,7 @@ class FileUpload extends React.Component {
         message.error(error.message)
       });}
       else{
-        message.warning("Please Attach Aleast One File");
+        message.warning("Please Attach Aleast One File",5);
       }
 
 // end
@@ -263,7 +263,7 @@ class FileUpload extends React.Component {
       .catch((error) => {
 
         console.error("Error:", error);
-        message.error(error.message)
+        message.error(error.message,5)
       });
   }
 
@@ -354,7 +354,7 @@ class FileUpload extends React.Component {
         secyear:secyear,
         percentileloading:false
       })
-      message.success("percentile calculated successfully");
+      message.success("percentile calculated successfully",6);
     })
     .catch((error) => {
 
@@ -382,7 +382,7 @@ class FileUpload extends React.Component {
         
         console.log("Derived Calc Success:", data);
          this.getNicCode();
-        message.success("Derived Calculation Completed Successfully");
+        message.success("Derived Calculation Completed Successfully",6);
         this.setState({
           loading:false,
           percentilebtntype:true
@@ -394,7 +394,7 @@ class FileUpload extends React.Component {
           loading:false
         })
         console.error("Error:", error);
-        message.error(error.message)
+        message.error(error.message,5)
       });
 
   }
@@ -425,7 +425,7 @@ class FileUpload extends React.Component {
           status_nic_dd:true,
         })
         console.error("Error:", error);
-        message.error(error.message)
+        message.error(error.message,5)
       });
 
   }
@@ -457,7 +457,7 @@ class FileUpload extends React.Component {
           percentileloading:false
         })
         
-        message.error(error.message)
+        message.error(error.message,5)
       });
     }
   
@@ -609,28 +609,8 @@ this.setState({
 
           </Col>
           <Col lg={12} style={{marginBottom:'5%'}}>
-          <Spin size="large" spinning={this.state.controversyspinner} tip="Uploading..." >
             <div style={{ display:'flex', justifyContent:'flex-start', alignItems:'center', marginBottom:'2%',paddingBottom:'1%',borderBottom:'2px solid #efefef'}}>
               <div style={{fontSize:'1.2rem', color: "#155F9B",fontWeight:'600'}}> STEP 4:</div>
-              <div style={{ fontSize: '1.2rem', color: "#155F9B", marginLeft: "10px", padding: "3px" }}>Upload Controversies  (optional) </div>
-            </div>
-            <div  style={{marginLeft:'5%'}}>
-                <header className="jumbotron" style={{ width: "100%" }}>
-                  <div style={{fontSize: "12px",color: "#155F9B",fontWeight: "600", marginBottom:'0.75rem'}}>Upload Controversies</div>
-                  <div>
-                    <Controversyuploader   controversyHandle={this.handleControversyexcel}></Controversyuploader>
-                  </div>
-                </header>
-              
-              <div>
-              <button type="button" className="btn btn-secondary btn-controversy-download" style={{ minWidth: "13rem", fontSize: "15px", marginRight:'0px', marinRight:'0px' }} onClick={this.downloadControversyData} >Download Controversies</button>
-              </div>
-              </div>
-              </Spin>
-          </Col>
-          <Col lg={12} style={{marginBottom:'5%'}}>
-            <div style={{ display:'flex', justifyContent:'flex-start', alignItems:'center', marginBottom:'2%',paddingBottom:'1%',borderBottom:'2px solid #efefef'}}>
-              <div style={{fontSize:'1.2rem', color: "#155F9B",fontWeight:'600'}}> STEP 5:</div>
               <div style={{ fontSize: '1.2rem', color: "#155F9B", marginLeft: "10px", padding: "3px" }}>Download JSON </div>
             </div>
             <div style={{display:'flex', flexDirection:'column', marginLeft:'5%'}}>
@@ -659,6 +639,27 @@ this.setState({
             </div>
         
           </Col>
+          <Col lg={12} style={{marginBottom:'5%'}}>
+          <Spin size="large" spinning={this.state.controversyspinner} tip="Uploading..." >
+            <div style={{ display:'flex', justifyContent:'flex-start', alignItems:'center', marginBottom:'2%',paddingBottom:'1%',borderBottom:'2px solid #efefef'}}>
+              <div style={{fontSize:'1.2rem', color: "#155F9B",fontWeight:'600'}}> STEP 5:</div>
+              <div style={{ fontSize: '1.2rem', color: "#155F9B", marginLeft: "10px", padding: "3px" }}>Upload Controversies  (optional) </div>
+            </div>
+            <div  style={{marginLeft:'5%'}}>
+                <header className="jumbotron" style={{ width: "100%" }}>
+                  <div style={{fontSize: "12px",color: "#155F9B",fontWeight: "600", marginBottom:'0.75rem'}}>Upload Controversies <span style={{color:"red"}}>(max limit 25)</span></div>
+                  <div>
+                    <Controversyuploader   controversyHandle={this.handleControversyexcel}></Controversyuploader>
+                  </div>
+                </header>
+              
+              <div>
+              <button type="button" className="btn btn-secondary btn-controversy-download" style={{ minWidth: "13rem", fontSize: "15px", marginRight:'0px', marinRight:'0px' }} onClick={this.downloadControversyData} >Download Controversies</button>
+              </div>
+              </div>
+              </Spin>
+          </Col>
+          
           {/* <Col lg={12} style={{marginBottom:'5%'}}>
           <div style={{ display:'flex', justifyContent:'flex-start', alignItems:'center', marginBottom:'2%',paddingBottom:'1%',borderBottom:'2px solid #efefef'}}>
               <div style={{fontSize:'1.2rem', color: "#155F9B",fontWeight:'600'}}> STEP 6:</div>
