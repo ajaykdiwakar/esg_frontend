@@ -13,7 +13,7 @@ class Controversyuploader extends SampleBase {
       this.dropContainerEle = element;
     };
     
-    this.count = 5;
+    this.count = 25;
     this.asyncSettings = {
       saveUrl: 'https://aspnetmvc.syncfusion.com/services/api/uploadbox/Save',
       removeUrl:
@@ -35,10 +35,13 @@ class Controversyuploader extends SampleBase {
        for (const file of currentfile) {
         for (const storedfile of selectedAlready) {
           
-          if(file.name === storedfile.name){
+          if(file.name === storedfile.name ){
+            console.log("match found")
+            if(fileLength <= 25 ){
+              console.log("len < 5")
             message.warning("Duplicates Not Allowed");
             args.cancel = true;
-        
+            }
           }
          }}
     if (fileLength > this.count) {
@@ -64,6 +67,7 @@ class Controversyuploader extends SampleBase {
                 }}
                 asyncSettings={this.asyncSettings}
                 selected={this.onFileSelect.bind(this)}
+                change={this.props.changetext_controversy}
                 actionComplete={this.props.controversyHandle}
                 autoUpload={false}
                 allowedExtensions='.xls, .xlsx'

@@ -4,15 +4,17 @@ import { isNullOrUndefined } from "@syncfusion/ej2-base";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { CSVLink } from "react-csv";
+import { ExportToCsv } from 'export-to-csv';
 import Fileuploader from './FileUploader.tsx';
 import './FileUpload.css';
 import { saveAs } from 'file-saver';
 import Controversyuploader from './ControversyUpload';
 import { Container } from 'react-bootstrap';
 import Select from 'react-select';
+import { confirmAlert } from 'react-confirm-alert'; // Import
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { Spin, message } from 'antd';
 import 'antd/dist/antd.css';
-;
 
 
 class FileUpload extends React.Component {
@@ -20,6 +22,7 @@ class FileUpload extends React.Component {
  
   fileObj = [];
   fileArray = [];
+  confirmPopup='';
 
   constructor(props) {
     
@@ -32,7 +35,7 @@ class FileUpload extends React.Component {
       companies: [],
       companyData: [],
       companyName: [],
-      companyID: "",
+      companyID: [],
       btntype:true,
       percentilebtntype:true,
       loading:false,
@@ -45,12 +48,16 @@ class FileUpload extends React.Component {
       status_dd:true,
       status_nic_dd:true,
       selectedControversyname:"",
-      nicCodeList:[],
+      nicCodeList:'',
+      status_selectControversy_dd:true,
+      content_file_attached_status:"",
+      content_file_attached_status_Controversy:"",
+      selected_conFile:[],
       nicValue:'',
-      mod_year1:[],
-      mod_year2:[],
-      firstyear:'',
-      secyear:'',
+    
+      status_delete:false,
+     
+     
     };
     // eslint-disable-next-line no-unused-expressions
     this.exceldownload;
@@ -74,6 +81,10 @@ class FileUpload extends React.Component {
           if(controversy_Download){
             controversy_Download.disabled = true;
           }      
+          let controversyexcel_Download = document.querySelector(".btn-controversyexcel-download");
+          if(controversyexcel_Download){
+            controversyexcel_Download.disabled = true;
+          } 
           //this.getNicCode();
           //this.getjsondata();
   }
@@ -89,7 +100,6 @@ class FileUpload extends React.Component {
       },
     });
   };
-  
 
   handleControversyexcel =(args) =>{
     if (!isNullOrUndefined(args.fileData) ){
@@ -103,11 +113,11 @@ class FileUpload extends React.Component {
         controversydata.append("file", selectedControversyFiles[x].rawFile);
       }
       this.setState({
-        controversyspinner:true,
+       controversyspinner:true,
         //selectedControversyname:selectedControversyFiles.name,
       })
-
-      fetch("http://13.234.131.197:3019/controversy", {
+      const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTI1MTBlMzU2ZDM2NjYwNWIwNDUzMyIsImlhdCI6MTYyMTY5MDQyMX0.52MKXMLD-A_QZxImaut5fpKFJ7MQQZB-so1ws5gVi0Q";
+      fetch("http://65.1.140.116:9010/controversies/upload?access_token="+token, {
         method: "POST",
         body: controversydata,
         
@@ -116,20 +126,36 @@ class FileUpload extends React.Component {
         
         .then((data) => {
           console.log(data, 'controversy data result');
-          if (data.status === 200) {
+          if (data.message === 'Files upload success') {
           
-            console.log(data.companyID,'data comp id')
+            const n =this.state.content_file_attached_status_Controversy;
+            console.log(n,"selected file length");
+            [...Array(n)].map((e, i) => {
+              document.getElementsByClassName('e-file-status')[i].innerHTML="File Attached";
+            });
+           
+            [...Array(n)].map((e, i) => {
+              document.getElementsByClassName('e-file-delete-btn')[i].style.display='none';
+            });
+            
+            document.querySelector('.e-file-clear-btn').style.display='none';
             this.setState({
               btntype:true,
               percentilebtntype:true,
-              controversyspinner:false,
-              companyID:data.companyID,
+             controversyspinner:false,
+              companyID:data.companies,
+              status_selectControversy_dd:false,
+              
             })
+            this.success();
+          }else{
+            message.error(data.message);
           }
-          this.getControversyjsondata();
-          this.success();
+         
+         
           
         })
+        
         .catch((error) => {
           this.setState({controversyspinner:false,});
           console.error("Error:", error);
@@ -144,11 +170,22 @@ class FileUpload extends React.Component {
     }
     
   }
+  getControversycompany=(arg)=>{
+    console.log(arg, 'selected con company');
+    this.setState({
+      selected_conFile:arg,
+
+    })
+    this.getControversyjsondata(arg);
+  }
   // get controversy json wrt years
-  getControversyjsondata =()=>{
+  getControversyjsondata =(arg)=>{
     
-    let companyid=this.state.companyID;
-    let url = `http://13.234.131.197:3019/getcontroversy/${companyid}`;
+    
+    
+    //http://65.1.140.116:9010/controversies/json/<companyId>?access_token=<token>
+    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTI1MTBlMzU2ZDM2NjYwNWIwNDUzMyIsImlhdCI6MTYyMTY5MDQyMX0.52MKXMLD-A_QZxImaut5fpKFJ7MQQZB-so1ws5gVi0Q";
+    let url = `http://65.1.140.116:9010/controversies/json/${arg.value}?access_token=`+token;
     fetch(url, {
       method: "GET"
     })
@@ -160,6 +197,10 @@ class FileUpload extends React.Component {
       if(controversyDownload){
         controversyDownload.disabled = false;
       }
+      let controversyexcel_Download = document.querySelector(".btn-controversyexcel-download");
+          if(controversyexcel_Download){
+            controversyexcel_Download.disabled = false;
+          } 
   
       
       console.log("controversy get value Success:", data);
@@ -206,6 +247,17 @@ class FileUpload extends React.Component {
       .then((data) => {
         
         if (data.message === "Files upload success") {
+          // document.getElementsByClassName('e-error')[0].innerHTML = 'File uploaded Successfully';
+          const n =this.state.content_file_attached_status;
+          console.log(n,"selected file length");
+          [...Array(n)].map((e, i) => {
+            document.getElementsByClassName('e-file-status')[i].innerHTML="File Attached";
+          });
+         
+          [...Array(n)].map((e, i) => {
+            document.getElementsByClassName('e-file-delete-btn')[i].style.display='none';
+          });
+          document.querySelector('.e-file-clear-btn').style.display='none';
             let jsonDownload = document.querySelector(".btn-json-download");
             if(jsonDownload){
               jsonDownload.disabled = true;
@@ -218,9 +270,13 @@ class FileUpload extends React.Component {
             this.setState({
               btntype:true,
               percentilebtntype:true,
+              companies:data.companies,
+              nicCodeList:data.nicList,
+              spinner:false,
+              status_dd:false,
             })
             this.success();
-            this.getAllcompany();
+            //this.getAllcompany();
             console.log("Success:", data);
         }else{
           this.setState({
@@ -244,28 +300,6 @@ class FileUpload extends React.Component {
     }
   }
 
-  
-  getAllcompany = () => {
-    const token= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTI1MTBlMzU2ZDM2NjYwNWIwNDUzMyIsImlhdCI6MTYyMTY5MDQyMX0.52MKXMLD-A_QZxImaut5fpKFJ7MQQZB-so1ws5gVi0Q";
-    fetch("http://65.1.140.116:9010/companies?access_token="+token, {
-      method: "GET"
-    })
-      .then((response) =>
-        response.json())
-      .then((data) => {       
-        this.setState({
-          companies: data.rows,
-          status_dd:false,
-          spinner:false
-        })
-      
-      })
-      .catch((error) => {
-
-        console.error("Error:", error);
-        message.error(error.message,5)
-      });
-  }
 
  
   
@@ -295,18 +329,13 @@ class FileUpload extends React.Component {
       console.log("get data Success:", data);
       const year1 =data.year1;
       const year2 =data.year2;
-      const mod_year1 = year1;
-      const mod_year2= year2;
-      const firstyear= year1 && year1[0].year;
-      const secyear= year2 && year2[0].year;
+    
+     
       const modifiedjsondata =[{ year:year1[0].year, Data:year1}, {year:year2[0].year, Data:year2}]
      console.log(modifiedjsondata, 'modifiedjsondata');
       this.setState({
         companyData: modifiedjsondata,
-        mod_year1:mod_year1,
-        mod_year2:mod_year2,
-        firstyear:firstyear,
-        secyear:secyear,
+
         percentileloading:false
       })
     })
@@ -381,11 +410,12 @@ class FileUpload extends React.Component {
       .then((data) => {
         
         console.log("Derived Calc Success:", data);
-         this.getNicCode();
+         //this.getNicCode();
         message.success("Derived Calculation Completed Successfully",6);
         this.setState({
           loading:false,
-          percentilebtntype:true
+          percentilebtntype:true,
+          status_nic_dd:false,
         })
         
       })
@@ -399,36 +429,6 @@ class FileUpload extends React.Component {
 
   }
 
-  // GET NIC CODE //
-  getNicCode= () =>{
-
-    const token= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTI1MTBlMzU2ZDM2NjYwNWIwNDUzMyIsImlhdCI6MTYyMTY5MDQyMX0.52MKXMLD-A_QZxImaut5fpKFJ7MQQZB-so1ws5gVi0Q";
-    let url = "http://65.1.140.116:9010/companies/all_nic?access_token="+token;
-
-    fetch(url, {
-      method: "GET",
-      
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        this.setState({
-          status_nic_dd:false,
-        })
-       
-        this.setState({
-          nicCodeList:data.rows,
-        });
-        
-      })
-      .catch((error) => {
-        this.setState({
-          status_nic_dd:true,
-        })
-        console.error("Error:", error);
-        message.error(error.message,5)
-      });
-
-  }
 
 
   getPercentileCalculation =()=>{
@@ -463,11 +463,10 @@ class FileUpload extends React.Component {
   
     downloadControversyData = () => {
     
-      console.log(this.state.conroversycompanyData.data," controversy company data")
       const { conroversycompanyData } = this.state;
       
       // Create a blob of the data
-      conroversycompanyData.data.map((args)=>{
+      conroversycompanyData.data.data.map((args)=>{
         const fileName = args.companyName+"["+ args.year+"]"+".json";
         const fileToSave = new Blob([JSON.stringify(args.Data)], {
           type: 'text/plain;charset=utf-8',
@@ -498,8 +497,42 @@ class FileUpload extends React.Component {
  
   }
   downloadExcel=()=>{
-    this.exceldownload.link.click();
-    this.exceldownload1.link.click();
+    // this.exceldownload.link.click();
+     
+    
+    // csvExporter.generateCsv(excelOutput);
+    this.state.companyData.map((arg)=>{
+      const options = {
+        filename:this.state.selectedCompany.label+"["+ arg.year+"]"+".xlsx" ,
+        fieldSeparator: ',',
+        quoteStrings: '"',
+        decimalSeparator: '.',
+        showLabels: true,
+        useTextFile: false,
+        useBom: true,
+        useKeysAsHeaders: true,
+      };
+      const csvExporter = new ExportToCsv(options);
+      csvExporter.generateCsv(arg.Data);
+      })
+    
+  }
+  downloadControversyExcel=()=>{
+    const { conroversycompanyData } = this.state;
+    conroversycompanyData.data.data.map((arg)=>{
+      const options = {
+        filename:arg.companyName+"["+ arg.year+"]"+".xlsx" ,
+        fieldSeparator: ',',
+        quoteStrings: '"',
+        decimalSeparator: '.',
+        showLabels: true,
+        useTextFile: false,
+        useBom: true,
+        useKeysAsHeaders: true,
+      };
+      const csvExporter = new ExportToCsv(options);
+      csvExporter.generateCsv(arg.Data);
+      })
   }
 
   getNiccode=(arg)=>{
@@ -510,14 +543,70 @@ this.setState({
 })
   }
 
+  changetext=()=>{
+    const statusvariable =document.getElementsByClassName('e-file-status');
+    console.log(statusvariable.length,"eeee");
+    const n = statusvariable.length;
+    this.setState({
+      content_file_attached_status:n,
+    });
+    [...Array(n)].map((e, i) => {
+      document.getElementsByClassName('e-file-status')[i].innerHTML="File Attached";
+    })
+  }
+  changetext_controversy=()=>{
+    const statusvariable_con =document.getElementsByClassName('e-file-status');
+    console.log(statusvariable_con.length,"eeee");
+    const n = statusvariable_con.length;
+    this.setState({
+      content_file_attached_status_Controversy:n,
+    });
+    [...Array(n)].map((e, i) => {
+      document.getElementsByClassName('e-file-status')[i].innerHTML="File Attached";
+    })
+  }
   
+  // removeExcels=(arg)=>{
+  //   //arg.cancel=true;
+  //   console.log("this is removeexcel")
+  //   console.log(arg, 'remove excel')
+  //   if (arg.cancel === true){
+  //   confirmAlert({
+  //     message: 'Are you sure to delete this file.',
+  //     buttons: [
+  //       {
+  //         label: 'Yes',
+          
+  //         onClick:()=>this.confirmPopup=false
+  //       },
+  //       {
+  //         label: 'No',
+          
+  //         onClick: () => this.confirmPopup=true
+  //       }
+  //     ]
+  //  });
+    
+  //   }
+  // arg.cancel=this.confirmPopup;
+  //   }
+    
+//     filesuccess=(arg)=>{
+// console.log(arg,'file succes');
+// //  document.getElementsByClassName("e-file-clear-btn").style.display="none";
+//     }
+//     removing=(e)=>{
+//       console.log(e, 'removing file')
+//       //e.cancel=this.confirmPopup;
+//       console.log("this is removing")
+//     };
   render() {
-    const excel1= this.state.mod_year1;
-    const excel2=this.state.mod_year2;
-    console.log(excel1,'excel1');
+    // const excel1= this.state.mod_year1;
+    // const excel2=this.state.mod_year2;
+
     console.log(this.state.secyear,'secyear');
-    const fileName_excel1 = this.state.selectedCompany.label+"["+this.state.firstyear+"]"+".CSV";
-    const fileName_excel2 = this.state.selectedCompany.label+"["+this.state.secyear+"]"+".CSV";
+    // const fileName_excel1 = this.state.selectedCompany.label+"["+this.state.firstyear+"]"+".CSV";
+    // const fileName_excel2 = this.state.selectedCompany.label+"["+this.state.secyear+"]"+".CSV";
     let loading = this.state.loading;
     let spinner = this.state.spinner;
     let percentile_loader =this.state.percentileloading;
@@ -525,6 +614,10 @@ this.setState({
         const listObj={value:company.id,label:company.companyName};
         return listObj;
     });
+    const allControversy_company = this.state.companyID && this.state.companyID.map((controversy)=>{
+      const listObj={value:controversy.id, label:controversy.companyName};
+      return listObj;
+    })
     let status_dd= this.state.status_dd;
     let status_nic_dd = this.state.status_nic_dd;
     let nicCode = this.state.nicCodeList;
@@ -553,7 +646,7 @@ this.setState({
                 <header className="jumbotron" style={{ width: "100%", margin:'0px' }}>
                   <div style={{fontSize: "12px",color: "#155F9B",fontWeight: "600", marginBottom:'0.75rem'}}>Upload Environmental, Social And Governance File(s)</div>
                   <div>
-                    <Fileuploader filenameHandle={this.handleChangeexcel} ></Fileuploader>
+                    <Fileuploader removing={this.removing} filenameHandle={this.handleChangeexcel} filesuccess={this.filesuccess} changetext={this.changetext} removeexcels={this.removeExcels}></Fileuploader>
                   </div>
                 </header>
               </div>
@@ -615,26 +708,8 @@ this.setState({
             </div>
             <div style={{display:'flex', flexDirection:'column', marginLeft:'5%'}}>
 
-            <button type="button" className="btn btn-secondary btn-json-download" onClick={this.downloadData} style={{ minWidth: "13rem", fontSize: "15px",marginBottom:"20px",marginRight:'0px', maringLeft:'0px' }}>Download Data Json</button>
-             <button type="button" className="btn btn-success btn-excel-download" onClick={this.downloadExcel} style={{ width: "14rem", fontSize: "15px",marginBottom:"20px", marginRight:'0px', maringLeft:'0px' }} >Download Data json as excel</button>
-             <div>
-                        <CSVLink 
-                        
-                       data={excel1} 
-                        filename={fileName_excel1}
-                        className="hidden"
-                        ref={(r) => this.exceldownload = r}
-                        target="_blank"
-                         />
-                         <CSVLink 
-                        
-                        data={excel2} 
-                         filename={fileName_excel2}
-                         className="hidden"
-                         ref={(r) => this.exceldownload1 = r}
-                         target="_blank"
-                          />
-              </div>
+            <button type="button" className="btn btn-secondary btn-json-download" onClick={this.downloadData} style={{ minWidth: "13rem", fontSize: "15px", margin:"0px", marginBottom:"20px" }}>Download Data Json</button>
+             <button type="button" className="btn btn-success btn-excel-download" onClick={this.downloadExcel} style={{ width: "14rem", fontSize: "15px",margin:"0px", marginBottom:"20px" }} >Download Data json as excel</button>
                       
             </div>
         
@@ -647,15 +722,28 @@ this.setState({
             </div>
             <div  style={{marginLeft:'5%'}}>
                 <header className="jumbotron" style={{ width: "100%" }}>
-                  <div style={{fontSize: "12px",color: "#155F9B",fontWeight: "600", marginBottom:'0.75rem'}}>Upload Controversies <span style={{color:"red"}}>(max limit 25)</span></div>
+                <div style={{fontSize: "12px",color: "#155F9B",fontWeight: "600", marginBottom:'0.75rem'}}>Upload Controversies <span style={{color:"red"}}>(max limit 25 files)</span></div>
                   <div>
-                    <Controversyuploader   controversyHandle={this.handleControversyexcel}></Controversyuploader>
+                    <Controversyuploader changetext_controversy={this.changetext_controversy}  controversyHandle={this.handleControversyexcel}></Controversyuploader>
                   </div>
                 </header>
-              
-              <div>
-              <button type="button" className="btn btn-secondary btn-controversy-download" style={{ minWidth: "13rem", fontSize: "15px", marginRight:'0px', marinRight:'0px' }} onClick={this.downloadControversyData} >Download Controversies</button>
-              </div>
+                <div style={{display:"flex",flexDirection:"column",minHeight:"12rem",justifyContent:'space-between'}}>
+                    <div  style={{fontSize: "12px",color: "#155F9B",fontWeight: "600"}}>Select Controversy Company*</div>
+                    <div style={{maxWidth: '40%', minWidth:'300px'}}>
+                      <Select 
+                      options={allControversy_company}
+                      onChange={this.getControversycompany}
+                      isDisabled={this.state.status_selectControversy_dd}
+                      />
+                    </div>
+                
+                    <div>
+                      <button type="button" className="btn btn-secondary btn-controversy-download" style={{ minWidth: "13rem", fontSize: "15px",margin:'0px' }} onClick={this.downloadControversyData} >Download Controversies</button>
+                    </div>
+                    <div>
+                    <button type="button" className="btn btn-success btn-controversyexcel-download" onClick={this.downloadControversyExcel} style={{ minWidth: "16rem", fontSize: "15px",margin:"0px", marginBottom:"20px" }} >Download Controversies as excel</button>
+                    </div>
+                </div>
               </div>
               </Spin>
           </Col>
