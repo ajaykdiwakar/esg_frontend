@@ -69,6 +69,7 @@ class Controversyuploader extends SampleBase {
                 selected={this.onFileSelect.bind(this)}
                 change={this.props.changetext_controversy}
                 actionComplete={this.props.controversyHandle}
+                beforeRemove={this.props.removeexcels_controversy}
                 autoUpload={false}
                 allowedExtensions='.xls, .xlsx'
                 buttons={{

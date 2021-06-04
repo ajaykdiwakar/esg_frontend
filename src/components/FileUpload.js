@@ -54,8 +54,8 @@ class FileUpload extends React.Component {
       content_file_attached_status_Controversy:"",
       selected_conFile:[],
       nicValue:'',
-    
       status_delete:false,
+      status_delete_controversy:false,
      
      
     };
@@ -285,12 +285,14 @@ class FileUpload extends React.Component {
             //this.getAllcompany();
             console.log("Success:", data);
         }else{
+         
           const n =this.state.content_file_attached_status;
           console.log(n,"selected file length");
           [...Array(n)].map((e, i) => {
             document.getElementsByClassName('e-file-status')[i].innerHTML="Remove and try again";
           });
           document.querySelector('.e-file-clear-btn').style.display='none';
+        
           this.setState({
                    spinner:false
                  });
@@ -562,9 +564,16 @@ this.setState({
     this.setState({
       content_file_attached_status:n,
     });
+    if(this.state.status_delete){
+    [...Array(n)].map((e, i) => {
+      document.getElementsByClassName('e-file-status')[i].innerHTML="remove and try again";
+    })
+  }
+  else{
     [...Array(n)].map((e, i) => {
       document.getElementsByClassName('e-file-status')[i].innerHTML="File Attached";
     })
+  }
   }
   changetext_controversy=()=>{
     const statusvariable_con =document.getElementsByClassName('e-file-status');
@@ -573,12 +582,26 @@ this.setState({
     this.setState({
       content_file_attached_status_Controversy:n,
     });
+    if(this.state.status_delete_controversy){
+    [...Array(n)].map((e, i) => {
+      document.getElementsByClassName('e-file-status')[i].innerHTML="Remove and try again";
+    })
+  }
+  else{
     [...Array(n)].map((e, i) => {
       document.getElementsByClassName('e-file-status')[i].innerHTML="File Attached";
     })
   }
-  
-  // removeExcels=(arg)=>{
+  }
+  removeexcels_controversy=()=>{
+    this.setState({
+      status_delete_controversy:true,
+     })
+  }
+   removeExcels=(arg)=>{
+     this.setState({
+      status_delete:true,
+     })
   //   //arg.cancel=true;
   //   console.log("this is removeexcel")
   //   console.log(arg, 'remove excel')
@@ -601,7 +624,7 @@ this.setState({
     
   //   }
   // arg.cancel=this.confirmPopup;
-  //   }
+ }
     
 //     filesuccess=(arg)=>{
 // console.log(arg,'file succes');
@@ -727,18 +750,20 @@ this.setState({
         
           </Col>
           <Col lg={12} style={{marginBottom:'5%'}}>
-          <Spin size="large" spinning={this.state.controversyspinner} tip="Uploading..." >
+          
             <div style={{ display:'flex', justifyContent:'flex-start', alignItems:'center', marginBottom:'2%',paddingBottom:'1%',borderBottom:'2px solid #efefef'}}>
               <div style={{fontSize:'1.2rem', color: "#155F9B",fontWeight:'600'}}> STEP 5:</div>
               <div style={{ fontSize: '1.2rem', color: "#155F9B", marginLeft: "10px", padding: "3px" }}>Upload Controversies  (optional) </div>
             </div>
             <div  style={{marginLeft:'5%'}}>
+            <Spin size="large" spinning={this.state.controversyspinner} tip="Uploading..." >
                 <header className="jumbotron" style={{ width: "100%" }}>
                 <div style={{fontSize: "12px",color: "#155F9B",fontWeight: "600", marginBottom:'0.75rem'}}>Upload Controversies <span style={{color:"red"}}>(max limit 25 files)</span></div>
                   <div>
-                    <Controversyuploader changetext_controversy={this.changetext_controversy}  controversyHandle={this.handleControversyexcel}></Controversyuploader>
+                    <Controversyuploader removeexcels_controversy={this.removeexcels_controversy} changetext_controversy={this.changetext_controversy}  controversyHandle={this.handleControversyexcel}></Controversyuploader>
                   </div>
                 </header>
+                </Spin>
                 <div style={{display:"flex",flexDirection:"column",minHeight:"12rem",justifyContent:'space-between'}}>
                     <div  style={{fontSize: "12px",color: "#155F9B",fontWeight: "600"}}>Select Controversy Company*</div>
                     <div style={{maxWidth: '40%', minWidth:'300px'}}>
@@ -757,7 +782,7 @@ this.setState({
                     </div>
                 </div>
               </div>
-              </Spin>
+             
           </Col>
           
           {/* <Col lg={12} style={{marginBottom:'5%'}}>
