@@ -150,6 +150,12 @@ class FileUpload extends React.Component {
             this.success();
           }else{
             message.error(data.message);
+            const n =this.state.content_file_attached_status_Controversy;
+            console.log(n,"selected file length");
+            [...Array(n)].map((e, i) => {
+              document.getElementsByClassName('e-file-status')[i].innerHTML="Remove and try again";
+            });
+            document.querySelector('.e-file-clear-btn').style.display='none';
           }
          
          
@@ -279,6 +285,12 @@ class FileUpload extends React.Component {
             //this.getAllcompany();
             console.log("Success:", data);
         }else{
+          const n =this.state.content_file_attached_status;
+          console.log(n,"selected file length");
+          [...Array(n)].map((e, i) => {
+            document.getElementsByClassName('e-file-status')[i].innerHTML="Remove and try again";
+          });
+          document.querySelector('.e-file-clear-btn').style.display='none';
           this.setState({
                    spinner:false
                  });
