@@ -1,5 +1,6 @@
-import { createElement, remove } from '@syncfusion/ej2-base';
-import { UploaderComponent } from '@syncfusion/ej2-react-inputs';
+import { createElement } from '@syncfusion/ej2-base';
+import { UploaderComponent,FileInfo } from '@syncfusion/ej2-react-inputs';
+import { DialogUtility } from '@syncfusion/ej2-popups';
 import * as React from 'react';
 
 
@@ -13,19 +14,17 @@ export default class fileUploader extends React.Component<any, any> {
       removeUrl: 'https://ej2.syncfusion.com/services/api/uploadbox/Remove',
       saveUrl: 'https://ej2.syncfusion.com/services/api/uploadbox/Save',
   }
+
+//   buttonClick=()=> {
+   
+// }
+
+
   private dropAreaRef:any= HTMLElement;
   public onCreated(): void {
       this.uploadObj.dropArea = this.dropAreaRef;
       this.uploadObj.dataBind();
   } 
-  constructor(props:any) {
-    super(props);
-    this.state = {
-        
-    }}
-    removing(arg:any){
-console.log(arg,'removing');
-    }
     public render(): JSX.Element {
         return (
             <div className = 'control-pane' ref={dropAreaEle => this.dropAreaRef = dropAreaEle!}>
@@ -40,8 +39,8 @@ console.log(arg,'removing');
                     autoUpload={false} allowedExtensions='.xls, .xlsx'
                     actionComplete={this.props.filenameHandle} 
                     change={this.props.changetext}
-                    beforeRemove={this.props.removeexcels}
-                    removing={this.removing}
+                    removing={this.props.removeexcels}
+                    
                     buttons={ { browse: 'Choose file', clear: this.clearEle, upload: this.uploadEle}}  
                     created={this.onCreated = this.onCreated.bind(this)}/>
                 </div>

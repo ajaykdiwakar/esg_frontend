@@ -1,9 +1,10 @@
 
 import React, { useState, useEffect } from "react";
-import { isNullOrUndefined } from "@syncfusion/ej2-base";
+import { isNullOrUndefined, removeChildInstance } from "@syncfusion/ej2-base";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { CSVLink } from "react-csv";
+import { DialogUtility } from '@syncfusion/ej2-popups';
 import { ExportToCsv } from 'export-to-csv';
 import Fileuploader from './FileUploader.tsx';
 import './FileUpload.css';
@@ -11,9 +12,7 @@ import { saveAs } from 'file-saver';
 import Controversyuploader from './ControversyUpload';
 import { Container } from 'react-bootstrap';
 import Select from 'react-select';
-import { confirmAlert } from 'react-confirm-alert'; // Import
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
-import { Spin, message } from 'antd';
+import { Spin,notification } from 'antd';
 import 'antd/dist/antd.css';
 
 
@@ -23,6 +22,9 @@ class FileUpload extends React.Component {
   fileObj = [];
   fileArray = [];
   confirmPopup='';
+  confirmPopup_controversy='';
+  removeFile=[];
+  removeFile_controversy=[];
 
   constructor(props) {
     
@@ -42,12 +44,9 @@ class FileUpload extends React.Component {
       spinner:false,
       controversyspinner:false,
       percentileloading:false,
-      finalArray: [],
       conroversycompanyData:[],
-      controversyFinalArray:[],
       status_dd:true,
       status_nic_dd:true,
-      selectedControversyname:"",
       nicCodeList:'',
       status_selectControversy_dd:true,
       content_file_attached_status:"",
@@ -56,8 +55,6 @@ class FileUpload extends React.Component {
       nicValue:'',
       status_delete:false,
       status_delete_controversy:false,
-     
-     
     };
     // eslint-disable-next-line no-unused-expressions
     this.exceldownload;
@@ -85,36 +82,22 @@ class FileUpload extends React.Component {
           if(controversyexcel_Download){
             controversyexcel_Download.disabled = true;
           } 
-          //this.getNicCode();
-          //this.getjsondata();
+         
   }
-  // success Message after uploading...
-  success = () => {
-    
-    message.success({
-      content: 'File Uploaded Successfully',
-      className: 'custom-class',
-      duration:6,
-      style: {
-        marginTop: '6vh',
-      },
-    });
-  };
 
+ 
   handleControversyexcel =(args) =>{
     if (!isNullOrUndefined(args.fileData) ){
      
       const selectedControversyFiles= args.fileData;
     // start 
       const controversydata = new FormData();
-      //console.log(this.state.selectedFile,"**");
       if(selectedControversyFiles && selectedControversyFiles.length > 0){
       for (var x = 0; x < selectedControversyFiles.length; x++) {
         controversydata.append("file", selectedControversyFiles[x].rawFile);
       }
       this.setState({
        controversyspinner:true,
-        //selectedControversyname:selectedControversyFiles.name,
       })
       const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTI1MTBlMzU2ZDM2NjYwNWIwNDUzMyIsImlhdCI6MTYyMTY5MDQyMX0.52MKXMLD-A_QZxImaut5fpKFJ7MQQZB-so1ws5gVi0Q";
       fetch("http://65.1.140.116:9010/controversies/upload?access_token="+token, {
@@ -147,9 +130,10 @@ class FileUpload extends React.Component {
               status_selectControversy_dd:false,
               
             })
-            this.success();
+           
+            notification.success({message: 'File Uploaded Successfully',duration:0})
           }else{
-            message.error(data.message);
+            
             const n =this.state.content_file_attached_status_Controversy;
             console.log(n,"selected file length");
             [...Array(n)].map((e, i) => {
@@ -165,11 +149,13 @@ class FileUpload extends React.Component {
         .catch((error) => {
           this.setState({controversyspinner:false,});
           console.error("Error:", error);
-          message.error(error.message,5)
+          notification.error({message:error.message,duration:0})
+          
         });
     }
       else{
-        message.warning("Please Attach Aleast One File",5);
+        
+        notification.warning({message:"Please Attach Aleast One File",duration:0})
       }
 
 // end
@@ -186,10 +172,6 @@ class FileUpload extends React.Component {
   }
   // get controversy json wrt years
   getControversyjsondata =(arg)=>{
-    
-    
-    
-    //http://65.1.140.116:9010/controversies/json/<companyId>?access_token=<token>
     const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTI1MTBlMzU2ZDM2NjYwNWIwNDUzMyIsImlhdCI6MTYyMTY5MDQyMX0.52MKXMLD-A_QZxImaut5fpKFJ7MQQZB-so1ws5gVi0Q";
     let url = `http://65.1.140.116:9010/controversies/json/${arg.value}?access_token=`+token;
     fetch(url, {
@@ -253,7 +235,6 @@ class FileUpload extends React.Component {
       .then((data) => {
         
         if (data.message === "Files upload success") {
-          // document.getElementsByClassName('e-error')[0].innerHTML = 'File uploaded Successfully';
           const n =this.state.content_file_attached_status;
           console.log(n,"selected file length");
           [...Array(n)].map((e, i) => {
@@ -281,7 +262,8 @@ class FileUpload extends React.Component {
               spinner:false,
               status_dd:false,
             })
-            this.success();
+          
+            notification.success({message: 'File Uploaded Successfully',duration:0})
             //this.getAllcompany();
             console.log("Success:", data);
         }else{
@@ -296,7 +278,8 @@ class FileUpload extends React.Component {
           this.setState({
                    spinner:false
                  });
-          message.warning(data.message,10);
+          
+          notification.warning({message:data.message,duration:0})
         }
        })
       .catch((error) => {
@@ -304,10 +287,12 @@ class FileUpload extends React.Component {
         this.setState({
           spinner:false
         })
-        message.error(error.message)
+       
+        notification.error({message:error.message,duration:0})
       });}
       else{
-        message.warning("Please Attach Aleast One File",5);
+       
+        notification.warning({message:"Please Attach Aleast One File",duration:0})
       }
 
 // end
@@ -322,7 +307,7 @@ class FileUpload extends React.Component {
       console.log(dropdowncompany.value,'companyName')
       this.setState({
         selectedCompany: dropdowncompany,
-        btntype : false
+        
       })
       const token= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTI1MTBlMzU2ZDM2NjYwNWIwNDUzMyIsImlhdCI6MTYyMTY5MDQyMX0.52MKXMLD-A_QZxImaut5fpKFJ7MQQZB-so1ws5gVi0Q";
     let url ='http://65.1.140.116:9010/derived_datapoints/generate-json/'+dropdowncompany.value+'?access_token='+token;
@@ -349,12 +334,11 @@ class FileUpload extends React.Component {
      console.log(modifiedjsondata, 'modifiedjsondata');
       this.setState({
         companyData: modifiedjsondata,
-
+        btntype : false,
         percentileloading:false
       })
     })
     .catch((error) => {
-
       console.error("Error:", error);
       
     });
@@ -383,21 +367,13 @@ class FileUpload extends React.Component {
       console.log("get data Success:", data);
       const year1 =data.year1;
       const year2 =data.year2;
-      const mod_year1 = year1;
-      const mod_year2= year2;
-      const firstyear= year1 && year1[0].year;
-      const secyear= year2 && year2[0].year;
       const modifiedjsondata =[{ year:year1[0].year, Data:year1}, {year:year2[0].year, Data:year2}]
-     console.log(modifiedjsondata, 'modifiedjsondata');
       this.setState({
         companyData: modifiedjsondata,
-        mod_year1:mod_year1,
-        mod_year2:mod_year2,
-        firstyear:firstyear,
-        secyear:secyear,
         percentileloading:false
       })
-      message.success("percentile calculated successfully",6);
+     
+      notification.success({message:'percentile calculated successfully',duration:0})
     })
     .catch((error) => {
 
@@ -424,8 +400,8 @@ class FileUpload extends React.Component {
       .then((data) => {
         
         console.log("Derived Calc Success:", data);
-         //this.getNicCode();
-        message.success("Derived Calculation Completed Successfully",6);
+        
+        notification.success({message:"Derived Calculation Completed Successfully",duration:0})
         this.setState({
           loading:false,
           percentilebtntype:true,
@@ -438,7 +414,8 @@ class FileUpload extends React.Component {
           loading:false
         })
         console.error("Error:", error);
-        message.error(error.message,5)
+       
+        notification.error({message:error.message,duration:0})
       });
 
   }
@@ -471,7 +448,8 @@ class FileUpload extends React.Component {
           percentileloading:false
         })
         
-        message.error(error.message,5)
+       
+        notification.error({message:error.message,duration:0})
       });
     }
   
@@ -492,11 +470,8 @@ class FileUpload extends React.Component {
      
     }  
 
-  downloadData = () => {
-    
-      
+  downloadData = () => { 
     const { companyData } = this.state
-   // const fileName = this.state.selectedCompany+".json";
     // Create a blob of the data
     companyData.map((args)=>{
       const fileName =this.state.selectedCompany.label+"["+ args.year+"]"+".json";
@@ -511,10 +486,7 @@ class FileUpload extends React.Component {
  
   }
   downloadExcel=()=>{
-    // this.exceldownload.link.click();
-     
-    
-    // csvExporter.generateCsv(excelOutput);
+
     this.state.companyData.map((arg)=>{
       const options = {
         filename:this.state.selectedCompany.label+"["+ arg.year+"]"+".xlsx" ,
@@ -593,55 +565,72 @@ this.setState({
     })
   }
   }
-  removeexcels_controversy=()=>{
+  removeexcels_controversy=(e)=>{
+    e.cancel=true;
+    
     this.setState({
       status_delete_controversy:true,
      })
+     this.removeFile_controversy.push(e.filesData)
+     this.confirmPopup_controversy =DialogUtility.confirm({
+      animationSettings: { effect: 'Zoom' },
+      cancelButton: { text: 'Cancel', click:this.CancelConClick},
+      closeOnEscape: true,
+      content: "Are you sure want to remove the file?",
+      okButton: { text: 'OK', click:this.OkConClick  },
+      showCloseIcon: true,
+      title: ' Confirmation ',
+  });
   }
+
+ 
    removeExcels=(arg)=>{
+     console.log(arg, 'arg')
+    arg.cancel=true;
      this.setState({
       status_delete:true,
-     })
-  //   //arg.cancel=true;
-  //   console.log("this is removeexcel")
-  //   console.log(arg, 'remove excel')
-  //   if (arg.cancel === true){
-  //   confirmAlert({
-  //     message: 'Are you sure to delete this file.',
-  //     buttons: [
-  //       {
-  //         label: 'Yes',
-          
-  //         onClick:()=>this.confirmPopup=false
-  //       },
-  //       {
-  //         label: 'No',
-          
-  //         onClick: () => this.confirmPopup=true
-  //       }
-  //     ]
-  //  });
-    
-  //   }
-  // arg.cancel=this.confirmPopup;
+     });
+     this.removeFile.push(arg.filesData); 
+     // Confirm popup
+     this.confirmPopup =DialogUtility.confirm({
+      animationSettings: { effect: 'Zoom' },
+      cancelButton: { text: 'Cancel', click:this.CancelClick},
+      closeOnEscape: true,
+      content: "Are you sure want to remove the file?",
+      okButton: { text: 'OK', click:this.OkClick  },
+      showCloseIcon: true,
+      title: ' Confirmation ',
+  });
+ 
  }
     
-//     filesuccess=(arg)=>{
-// console.log(arg,'file succes');
-// //  document.getElementsByClassName("e-file-clear-btn").style.display="none";
-//     }
-//     removing=(e)=>{
-//       console.log(e, 'removing file')
-//       //e.cancel=this.confirmPopup;
-//       console.log("this is removing")
-//     };
-  render() {
-    // const excel1= this.state.mod_year1;
-    // const excel2=this.state.mod_year2;
 
-    console.log(this.state.secyear,'secyear');
-    // const fileName_excel1 = this.state.selectedCompany.label+"["+this.state.firstyear+"]"+".CSV";
-    // const fileName_excel2 = this.state.selectedCompany.label+"["+this.state.secyear+"]"+".CSV";
+    OkClick=()=>{
+    
+    
+   this.confirmPopup.hide();
+    var uploadObj = document.getElementById('fileUpload').ej2_instances[0]; 
+    console.log(uploadObj,'uploadObj');
+  uploadObj.remove(this.removeFile[0], false, true); 
+    this.removeFile=[]; 
+}
+CancelClick=()=> {
+    
+    this.confirmPopup.hide();
+}
+OkConClick=()=>{
+
+this.confirmPopup_controversy.hide();
+var uploadObj = document.getElementById('controversyUpload').ej2_instances[0]; 
+console.log(uploadObj,'uploadObj');
+uploadObj.remove(this.removeFile_controversy[0], false, true); 
+this.removeFile_controversy=[]; 
+}
+CancelConClick=()=> {
+
+this.confirmPopup_controversy.hide();
+}
+  render() {
     let loading = this.state.loading;
     let spinner = this.state.spinner;
     let percentile_loader =this.state.percentileloading;
@@ -660,7 +649,6 @@ this.setState({
       const modifiedNiccode ={value:ele, label:ele };
       return modifiedNiccode;
     })
-    console.log(nicCode,"nicCode");
     
 
     return (
@@ -681,7 +669,7 @@ this.setState({
                 <header className="jumbotron" style={{ width: "100%", margin:'0px' }}>
                   <div style={{fontSize: "12px",color: "#155F9B",fontWeight: "600", marginBottom:'0.75rem'}}>Upload Environmental, Social And Governance File(s)</div>
                   <div>
-                    <Fileuploader removing={this.removing} filenameHandle={this.handleChangeexcel} filesuccess={this.filesuccess} changetext={this.changetext} removeexcels={this.removeExcels}></Fileuploader>
+                    <Fileuploader removing={this.removing} filenameHandle={this.handleChangeexcel}  changetext={this.changetext} removeexcels={this.removeExcels}></Fileuploader>
                   </div>
                 </header>
               </div>

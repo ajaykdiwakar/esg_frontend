@@ -6,6 +6,7 @@
     "@ramonak/react-excel": "^1.0.1",
     "@syncfusion/ej2-base": "^18.4.44",
     "@syncfusion/ej2-react-inputs": "^18.4.47",
+    "@syncfusion/ej2-react-popups": "^19.1.66",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
