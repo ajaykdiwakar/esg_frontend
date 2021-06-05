@@ -439,8 +439,10 @@ class FileUpload extends React.Component {
         
         console.log("percentileSuccess:", data);
         this.getjsondata()
-       
-       
+        this.setState({
+          percentileloading:false
+        })
+        notification.success({message:"Percentile Calculated Successfully",duration:0})
       })
       .catch((error) => {
         this.setState({
