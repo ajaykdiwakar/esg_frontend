@@ -307,7 +307,7 @@ class FileUpload extends React.Component {
       console.log(dropdowncompany.value,'companyName')
       this.setState({
         selectedCompany: dropdowncompany,
-        
+         btntype : false,
       })
       const token= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTI1MTBlMzU2ZDM2NjYwNWIwNDUzMyIsImlhdCI6MTYyMTY5MDQyMX0.52MKXMLD-A_QZxImaut5fpKFJ7MQQZB-so1ws5gVi0Q";
     let url ='http://65.1.140.116:9010/derived_datapoints/generate-json/'+dropdowncompany.value+'?access_token='+token;
@@ -326,15 +326,14 @@ class FileUpload extends React.Component {
       }
       
       console.log("get data Success:", data);
-      const year1 =data.year1;
-      const year2 =data.year2;
+     
     
      
-      const modifiedjsondata =[{ year:year1[0].year, Data:year1}, {year:year2[0].year, Data:year2}]
+      const modifiedjsondata =data.data.fiscalYear;
      console.log(modifiedjsondata, 'modifiedjsondata');
       this.setState({
         companyData: modifiedjsondata,
-        btntype : false,
+       
         percentileloading:false
       })
     })
