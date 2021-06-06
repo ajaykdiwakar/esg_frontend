@@ -1,6 +1,5 @@
 import { createElement } from '@syncfusion/ej2-base';
-import { UploaderComponent,FileInfo } from '@syncfusion/ej2-react-inputs';
-import { DialogUtility } from '@syncfusion/ej2-popups';
+import { UploaderComponent } from '@syncfusion/ej2-react-inputs';
 import * as React from 'react';
 
 
@@ -8,8 +7,8 @@ import * as React from 'react';
 
 export default class fileUploader extends React.Component<any, any> {
   public uploadObj:any= UploaderComponent;
-  public uploadEle: HTMLElement = createElement('span', { className: 'upload e-icons', innerHTML : 'Upload All' });
-  public clearEle: HTMLElement = createElement('span', { className: 'remove e-icons', innerHTML : 'Clear All' });
+//   public uploadEle: HTMLElement = createElement('span', { className: 'upload e-icons', innerHTML : 'Attach All' });
+//   public clearEle: HTMLElement = createElement('span', { className: 'remove e-icons', innerHTML : 'Clear All' });
   public path: object = {
       removeUrl: 'https://ej2.syncfusion.com/services/api/uploadbox/Remove',
       saveUrl: 'https://ej2.syncfusion.com/services/api/uploadbox/Save',
@@ -37,13 +36,14 @@ export default class fileUploader extends React.Component<any, any> {
                     asyncSettings = {this.path}
                     success={this.props.filesuccess}
                     autoUpload={false} allowedExtensions='.xls, .xlsx'
-                    actionComplete={this.props.filenameHandle} 
+                    actionComplete={this.props.actionComplete}
                     change={this.props.changetext}
                     removing={this.props.removeexcels}
-                    
-                    buttons={ { browse: 'Choose file', clear: this.clearEle, upload: this.uploadEle}}  
+                    clearing={this.props.clearingexcels}
+                    buttons={ { browse: 'Choose file', clear: 'Clear', upload:'Attach'}}  
                     created={this.onCreated = this.onCreated.bind(this)}/>
                 </div>
+                <div className="e-info" style={{color:'red'}}></div>
                 </div>
                 </div>
         </div>);

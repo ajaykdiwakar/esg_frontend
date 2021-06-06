@@ -1,9 +1,8 @@
 import { render } from 'react-dom';
 import './Controversyexcel.css';
 import * as React from 'react';
-import {  message } from 'antd';
+
 import { SampleBase } from './Sample-base';
-import { PropertyPane } from './PropertyPane';
 import { UploaderComponent } from '@syncfusion/ej2-react-inputs';
 class Controversyuploader extends SampleBase {
   constructor(props) {
@@ -21,13 +20,15 @@ class Controversyuploader extends SampleBase {
     };
   }
   rendereComplete() {
-    this.uploadObj.dropArea = this.dropContainerEle;
-    this.uploadObj.element.setAttribute('name', 'UploadFiles');
-    this.uploadObj.dataBind();
+    // this.uploadObj.dropArea = this.dropContainerEle;
+    // this.uploadObj.element.setAttribute('name', 'UploadFiles');
+    // this.uploadObj.dataBind();
   }
+
   onFileSelect(args) {
-    
-    console.log(args, 'main args');
+   
+    document.getElementsByClassName('e-warn')[0].innerHTML = '';
+   // console.log(args, 'main args');
     var fileLength =
       args.filesData.length + this.uploadObj.getFilesData().length;
       const currentfile=args.filesData;
@@ -39,11 +40,13 @@ class Controversyuploader extends SampleBase {
             console.log("match found")
             if(fileLength <= 25 ){
               console.log("len < 5")
-            message.warning("Duplicates Not Allowed");
+              document.getElementsByClassName('e-warn')[0].innerHTML = 'Duplicates Not Allowed';
+           
             args.cancel = true;
-            }
-          }
+            }   
+          }  
          }}
+        
     if (fileLength > this.count) {
       args.cancel = true;
       document.getElementsByClassName('e-error')[0].innerHTML =
@@ -54,6 +57,7 @@ class Controversyuploader extends SampleBase {
     }
   }
   render() {
+  
     return (
       <div className="control-pane" ref={this.dropContainerRef}>
         <div className="control-section row uploadpreview">
@@ -68,17 +72,18 @@ class Controversyuploader extends SampleBase {
                 asyncSettings={this.asyncSettings}
                 selected={this.onFileSelect.bind(this)}
                 change={this.props.changetext_controversy}
-                actionComplete={this.props.controversyHandle}
+                actionComplete={this.props.actionCompleteControversy}
                 removing={this.props.removeexcels_controversy}
                 autoUpload={false}
                 allowedExtensions='.xls, .xlsx'
                 buttons={{
                   browse: 'Choose file',
-                  clear: this.clearEle,
-                  upload: this.uploadEle
+                  clear: 'Clear',
+                   upload: 'Attach',
                 }}
               />
-              <div class="e-error" />
+              <div className="e-error" />
+              <div className="e-warn" style={{color:'red'}}/>
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { isNullOrUndefined, removeChildInstance } from "@syncfusion/ej2-base";
+import { enableVersionBasedPersistence, isNullOrUndefined, removeChildInstance } from "@syncfusion/ej2-base";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { CSVLink } from "react-csv";
@@ -12,7 +12,7 @@ import { saveAs } from 'file-saver';
 import Controversyuploader from './ControversyUpload';
 import { Container } from 'react-bootstrap';
 import Select from 'react-select';
-import { Spin,notification } from 'antd';
+import { Spin,notification,message } from 'antd';
 import 'antd/dist/antd.css';
 
 
@@ -25,6 +25,8 @@ class FileUpload extends React.Component {
   confirmPopup_controversy='';
   removeFile=[];
   removeFile_controversy=[];
+  confirmPopupClearAll='';
+  removeFileClearAll=[];
 
   constructor(props) {
     
@@ -41,6 +43,8 @@ class FileUpload extends React.Component {
       btntype:true,
       percentilebtntype:true,
       loading:false,
+      selectedFile: undefined,
+      selectedControversyFiles:undefined,
       spinner:false,
       controversyspinner:false,
       percentileloading:false,
@@ -82,19 +86,36 @@ class FileUpload extends React.Component {
           if(controversyexcel_Download){
             controversyexcel_Download.disabled = true;
           } 
+          let uploadEGS = document.querySelector(".btn-upload-excel");
+          if(uploadEGS){
+            uploadEGS.disabled = true;
+          }
+         
+          let uploadControversy = document.querySelector(".btn-upload-controversy");
+          if(uploadControversy){
+            uploadControversy.disabled = true;
+          }
          
   }
-
+  actionCompleteControversy=(ele)=>{
+    document.querySelector('.e-file-clear-btn').style.display='none';
+if(ele){
+  let uploadControversy = document.querySelector(".btn-upload-controversy");
+  if(uploadControversy){
+    uploadControversy.disabled = false;
+  }
+}
+  }
  
-  handleControversyexcel =(args) =>{
-    if (!isNullOrUndefined(args.fileData) ){
-     
-      const selectedControversyFiles= args.fileData;
+  handleControversyexcel =(e) =>{
+    console.log(this.state.selectedControversyFiles,'this.state.selectedControversyFiles');
+    e.preventDefault();
+    if (!isNullOrUndefined(this.state.selectedControversyFiles) ){
     // start 
       const controversydata = new FormData();
-      if(selectedControversyFiles && selectedControversyFiles.length > 0){
-      for (var x = 0; x < selectedControversyFiles.length; x++) {
-        controversydata.append("file", selectedControversyFiles[x].rawFile);
+      if(this.state.selectedControversyFiles && this.state.selectedControversyFiles.length > 0){
+      for (var x = 0; x < this.state.selectedControversyFiles.length; x++) {
+        controversydata.append("file", this.state.selectedControversyFiles[x].rawFile);
       }
       this.setState({
        controversyspinner:true,
@@ -117,10 +138,14 @@ class FileUpload extends React.Component {
               document.getElementsByClassName('e-file-status')[i].innerHTML="File Attached";
             });
            
-            [...Array(n)].map((e, i) => {
-              document.getElementsByClassName('e-file-delete-btn')[i].style.display='none';
-            });
-            
+            // [...Array(n)].map((e, i) => {
+            //   document.getElementsByClassName('e-file-delete-btn')[i].style.display='none';
+            // });
+
+            let uploadControversy = document.querySelector(".btn-upload-controversy");
+            if(uploadControversy){
+              uploadControversy.disabled = true;
+            }
             document.querySelector('.e-file-clear-btn').style.display='none';
             this.setState({
               btntype:true,
@@ -155,10 +180,12 @@ class FileUpload extends React.Component {
     }
       else{
         
-        notification.warning({message:"Please Attach Aleast One File",duration:0})
+        notification.warning({message:"Please attach aleast one file",duration:0})
       }
 
 // end
+    }else{
+      message.warning("Please attach atleast one file");
     }
     
   }
@@ -207,18 +234,27 @@ class FileUpload extends React.Component {
     });
 }
 
-
+actionComplete=(arg)=>{
+  document.querySelector('.e-file-clear-btn').style.display='none';
+if(arg){
+  let uploadEGS = document.querySelector(".btn-upload-excel");
+  if(uploadEGS){
+    uploadEGS.disabled = false;
+  }
+}
+}
   handleChangeexcel = (e) => {
+    e.preventDefault();
     console.log(e,"excels");
-    if (!isNullOrUndefined(e.fileData)){
-      const selectedFiles= e.fileData;
+    if (!isNullOrUndefined(this.state.selectedFile)){
+     
 
     // start 
 
     const data = new FormData();
-    if(selectedFiles && selectedFiles.length > 0){
-    for (var x = 0; x < selectedFiles.length; x++) {
-      data.append("file", selectedFiles[x].rawFile);
+    if(this.state.selectedFile && this.state.selectedFile.length > 0){
+    for (var x = 0; x < this.state.selectedFile.length; x++) {
+      data.append("file", this.state.selectedFile[x].rawFile);
     }
     this.setState({
       spinner:true
@@ -241,9 +277,9 @@ class FileUpload extends React.Component {
             document.getElementsByClassName('e-file-status')[i].innerHTML="File Attached";
           });
          
-          [...Array(n)].map((e, i) => {
-            document.getElementsByClassName('e-file-delete-btn')[i].style.display='none';
-          });
+          // [...Array(n)].map((e, i) => {
+          //   document.getElementsByClassName('e-file-delete-btn')[i].style.display='none';
+          // });
           document.querySelector('.e-file-clear-btn').style.display='none';
             let jsonDownload = document.querySelector(".btn-json-download");
             if(jsonDownload){
@@ -252,6 +288,10 @@ class FileUpload extends React.Component {
             let excel_Download = document.querySelector(".btn-excel-download");
             if(excel_Download){
               excel_Download.disabled = true;
+            }
+            let uploadEGS = document.querySelector(".btn-upload-excel");
+            if(uploadEGS){
+              uploadEGS.disabled = true;
             }
           
             this.setState({
@@ -271,10 +311,10 @@ class FileUpload extends React.Component {
           const n =this.state.content_file_attached_status;
           console.log(n,"selected file length");
           [...Array(n)].map((e, i) => {
-            document.getElementsByClassName('e-file-status')[i].innerHTML="Remove and try again";
+            document.getElementsByClassName('e-file-status')[i].innerHTML="file Attached";
           });
           document.querySelector('.e-file-clear-btn').style.display='none';
-        
+        document.getElementsByClassName('e-info')[0].innerHTML="Remove file and try again";
           this.setState({
                    spinner:false
                  });
@@ -292,14 +332,16 @@ class FileUpload extends React.Component {
       });}
       else{
        
-        notification.warning({message:"Please Attach Aleast One File",duration:0})
+        notification.warning({message:"Please attach aleast one file",duration:0})
       }
 
 // end
+    }else{
+      message.warning("Please attach alteast one file");
     }
   }
 
-
+ 
  
   
   getCompanyData(dropdowncompany) {
@@ -530,41 +572,105 @@ this.setState({
 })
   }
 
-  changetext=()=>{
+  changetext=(arg)=>{
+    if(!isNullOrUndefined(arg.file)){
+      document.getElementsByClassName('e-info')[0].innerHTML="";
+      console.log(arg.file, 'onChange');
+      const statusvariable =document.getElementsByClassName('e-file-status');
+      if(statusvariable.length === 0){
+       
+        let uploadEGS = document.querySelector(".btn-upload-controversy");
+        if(uploadEGS){
+          uploadEGS.disabled = true;
+        }
+      }
+      
+      
+      console.log(statusvariable,"eeee");
+      const n = statusvariable.length;
+      this.setState({
+        content_file_attached_status:n,
+        selectedFile: arg.file,
+
+      });
+    
+      [...Array(n)].map((e, i) => {
+        document.getElementsByClassName('e-file-status')[i].innerHTML="File Attached";
+      })
+    
+  }
+  if(!isNullOrUndefined(arg.files)){
+    document.getElementsByClassName('e-info')[0].innerHTML="";
+    console.log(arg.files, 'onChange');
     const statusvariable =document.getElementsByClassName('e-file-status');
-    console.log(statusvariable.length,"eeee");
+    if(statusvariable.length === 0){
+     
+      let uploadEGS = document.querySelector(".btn-upload-controversy");
+      if(uploadEGS){
+        uploadEGS.disabled = true;
+      }
+    }
+    
+    
+    console.log(statusvariable,"eeee");
     const n = statusvariable.length;
     this.setState({
       content_file_attached_status:n,
+      selectedFile: arg.files,
+
     });
-    if(this.state.status_delete){
-    [...Array(n)].map((e, i) => {
-      document.getElementsByClassName('e-file-status')[i].innerHTML="remove and try again";
-    })
-  }
-  else{
+ 
     [...Array(n)].map((e, i) => {
       document.getElementsByClassName('e-file-status')[i].innerHTML="File Attached";
     })
+ 
   }
   }
-  changetext_controversy=()=>{
-    const statusvariable_con =document.getElementsByClassName('e-file-status');
-    console.log(statusvariable_con.length,"eeee");
-    const n = statusvariable_con.length;
-    this.setState({
-      content_file_attached_status_Controversy:n,
-    });
-    if(this.state.status_delete_controversy){
-    [...Array(n)].map((e, i) => {
-      document.getElementsByClassName('e-file-status')[i].innerHTML="Remove and try again";
-    })
-  }
-  else{
-    [...Array(n)].map((e, i) => {
-      document.getElementsByClassName('e-file-status')[i].innerHTML="File Attached";
-    })
-  }
+  changetext_controversy=(e)=>{
+    document.getElementsByClassName('e-warn')[0].innerHTML = '';
+    console.log(e, 'change conroversy')
+    if(!isNullOrUndefined(e.file)){
+          const statusvariable_con =document.getElementsByClassName('e-file-status');
+          console.log(statusvariable_con.length,"eeee");
+          if(statusvariable_con.length === 0){
+            
+            let uploadControversy = document.querySelector(".btn-upload-controversy");
+            if(uploadControversy){
+              uploadControversy.disabled = true;
+            }
+          }
+          
+          const n = statusvariable_con.length;
+          this.setState({
+            content_file_attached_status_Controversy:n,
+            selectedControversyFiles:e.file,
+          });
+        
+          [...Array(n)].map((e, i) => {
+            document.getElementsByClassName('e-file-status')[i].innerHTML="File Attached";
+          })
+        
+    }
+    if(!isNullOrUndefined(e.files)){
+      const statusvariable_con =document.getElementsByClassName('e-file-status');
+      console.log(statusvariable_con.length,"eeee");
+      if(statusvariable_con.length === 0){
+       
+        let uploadControversy = document.querySelector(".btn-upload-controversy");
+        if(uploadControversy){
+          uploadControversy.disabled = true;
+        }
+      }
+      
+      const n = statusvariable_con.length;
+      this.setState({
+        content_file_attached_status_Controversy:n,
+        selectedControversyFiles:e.files,
+      });
+      [...Array(n)].map((e, i) => {
+        document.getElementsByClassName('e-file-status')[i].innerHTML="File Attached";
+      })
+    }    
   }
   removeexcels_controversy=(e)=>{
     e.cancel=true;
@@ -584,13 +690,35 @@ this.setState({
   });
   }
 
- 
+//   clearingexcels=(args)=>{
+//      args.cancel=true;
+//      const dummy=[];
+//  console.log(args,'clear ALL');
+// const allClearFiles = args.filesData.map((e)=>{
+//       dummy.push(e);
+//       return dummy;
+// })
+// console.log(allClearFiles,'allClearFiles');
+// this.removeFileClearAll=allClearFiles[0];
+// console.log(this.removeFileClearAll.length,'this.removeFileClearAll.length');
+// this.confirmPopupClearAll = DialogUtility.confirm({
+//   animationSettings: { effect: 'Zoom' },
+//   cancelButton: { text: 'Cancel', click:this.clearAllCancel},
+//   closeOnEscape: true,
+//   content: "Are you sure want to remove All the file?",
+//   okButton: { text: 'OK', click:this.clearAllOk  },
+//   showCloseIcon: true,
+//   title: ' Confirmation ',
+// });
+//    }
+
+  
    removeExcels=(arg)=>{
      console.log(arg, 'arg')
     arg.cancel=true;
-     this.setState({
-      status_delete:true,
-     });
+    //  this.setState({
+    //   status_delete:true,
+    //  });
      this.removeFile.push(arg.filesData); 
      // Confirm popup
      this.confirmPopup =DialogUtility.confirm({
@@ -605,13 +733,14 @@ this.setState({
  
  }
     
-
-    OkClick=()=>{
-    
+// Remove Individual file for ESG
+OkClick=()=>{
+  
+  
     
    this.confirmPopup.hide();
     var uploadObj = document.getElementById('fileUpload').ej2_instances[0]; 
-    console.log(uploadObj,'uploadObj');
+    console.log(this.removeFile[0],'uploadObj');
   uploadObj.remove(this.removeFile[0], false, true); 
     this.removeFile=[]; 
 }
@@ -619,8 +748,31 @@ CancelClick=()=> {
     
     this.confirmPopup.hide();
 }
+//clear All file in ESG
+// clearAllOk=()=>{ 
+//   this.confirmPopupClearAll.hide();
+ 
+//    var uploadObj = document.getElementById('fileUpload').ej2_instances[0]; 
+//    console.log(this.removeFileClearAll,'this.removeFileClearAll');
+//    const n = this.removeFileClearAll.length;
+//    [...Array(n)].map((e, i) => {
+//      console.log(i,'i');
+//     uploadObj.remove(this.removeFileClearAll[i], false, true); 
+    
+//   });
+//    this.removeFileClearAll=[]; 
+//    console.log(this.removeFileClearAll,' after this.removeFileClearAll');
+   
+// }
+// clearAllCancel=()=> {
+   
+//    this.confirmPopupClearAll.hide();
+// }
+
+// Remove Individual file for Controversy
 OkConClick=()=>{
 
+  
 this.confirmPopup_controversy.hide();
 var uploadObj = document.getElementById('controversyUpload').ej2_instances[0]; 
 console.log(uploadObj,'uploadObj');
@@ -670,9 +822,13 @@ this.confirmPopup_controversy.hide();
                 <header className="jumbotron" style={{ width: "100%", margin:'0px' }}>
                   <div style={{fontSize: "12px",color: "#155F9B",fontWeight: "600", marginBottom:'0.75rem'}}>Upload Environmental, Social And Governance File(s)</div>
                   <div>
-                    <Fileuploader removing={this.removing} filenameHandle={this.handleChangeexcel}  changetext={this.changetext} removeexcels={this.removeExcels}></Fileuploader>
+                    <Fileuploader  clearingexcels={this.clearingexcels} actionComplete={this.actionComplete}  changetext={this.changetext} removeexcels={this.removeExcels}></Fileuploader>
                   </div>
                 </header>
+                <div style={{display:"flex",justifyContent:"flex-start",alignItems:"center",minHeight:"5rem"}}>
+    
+                  <button type="button" className="btn btn-info btn-upload-excel" onClick={this.handleChangeexcel} style={{ minWidth: "16rem", fontSize: "15px",margin:"0px" }} >Upload</button>
+                </div>
               </div>
               </Spin>
           </Col>
@@ -746,14 +902,18 @@ this.confirmPopup_controversy.hide();
             </div>
             <div  style={{marginLeft:'5%'}}>
             <Spin size="large" spinning={this.state.controversyspinner} tip="Uploading..." >
-                <header className="jumbotron" style={{ width: "100%" }}>
-                <div style={{fontSize: "12px",color: "#155F9B",fontWeight: "600", marginBottom:'0.75rem'}}>Upload Controversies <span style={{color:"red"}}>(max limit 25 files)</span></div>
+                <header className="jumbotron" style={{ width: "100%",margin:"0%" }}>
+                <div style={{fontSize: "12px",color: "#155F9B",fontWeight: "600",marginBottom:"0.75rem"}}>Upload Controversies <span style={{color:"red"}}>(max limit 25 files)</span></div>
                   <div>
-                    <Controversyuploader removeexcels_controversy={this.removeexcels_controversy} changetext_controversy={this.changetext_controversy}  controversyHandle={this.handleControversyexcel}></Controversyuploader>
+                    <Controversyuploader actionCompleteControversy={this.actionCompleteControversy} removeexcels_controversy={this.removeexcels_controversy} changetext_controversy={this.changetext_controversy}  ></Controversyuploader>
                   </div>
+                 
                 </header>
+                <div style={{display:"flex",justifyContent:"flex-start",alignItems:"center",minHeight:"5rem"}}>
+                  <button type="button" className="btn btn-info btn-upload-controversy" onClick={this.handleControversyexcel} style={{ minWidth: "16rem", fontSize: "15px",margin:"0px" }} >Upload</button>
+                  </div>
                 </Spin>
-                <div style={{display:"flex",flexDirection:"column",minHeight:"12rem",justifyContent:'space-between'}}>
+                <div style={{display:"flex",flexDirection:"column",minHeight:"12rem",justifyContent:'space-between',marginTop: '3%'}}>
                     <div  style={{fontSize: "12px",color: "#155F9B",fontWeight: "600"}}>Select Controversy Company*</div>
                     <div style={{maxWidth: '40%', minWidth:'300px'}}>
                       <Select 
