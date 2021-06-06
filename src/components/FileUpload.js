@@ -37,7 +37,9 @@ class FileUpload extends React.Component {
       cols: [],
       selectedCompany: "",
       companies: [],
+      allListCompanies:[],
       companyData: [],
+      selectedDerivedFile:'',
       companyName: [],
       companyID: [],
       btntype:true,
@@ -59,6 +61,7 @@ class FileUpload extends React.Component {
       nicValue:'',
       status_delete:false,
       status_delete_controversy:false,
+      getAllcomp_status:true,
     };
     // eslint-disable-next-line no-unused-expressions
     this.exceldownload;
@@ -95,6 +98,8 @@ class FileUpload extends React.Component {
           if(uploadControversy){
             uploadControversy.disabled = true;
           }
+          this.getAllcompany();
+          notification.info({message:"You can directly generate JSON for companies in STEP 4",duration:0})
          
   }
   actionCompleteControversy=(ele)=>{
@@ -281,19 +286,19 @@ if(arg){
           //   document.getElementsByClassName('e-file-delete-btn')[i].style.display='none';
           // });
           document.querySelector('.e-file-clear-btn').style.display='none';
-            let jsonDownload = document.querySelector(".btn-json-download");
-            if(jsonDownload){
-              jsonDownload.disabled = true;
-            }
-            let excel_Download = document.querySelector(".btn-excel-download");
-            if(excel_Download){
-              excel_Download.disabled = true;
-            }
+            // let jsonDownload = document.querySelector(".btn-json-download");
+            // if(jsonDownload){
+            //   jsonDownload.disabled = true;
+            // }
+            // let excel_Download = document.querySelector(".btn-excel-download");
+            // if(excel_Download){
+            //   excel_Download.disabled = true;
+            // }
             let uploadEGS = document.querySelector(".btn-upload-excel");
             if(uploadEGS){
               uploadEGS.disabled = true;
             }
-          
+            this.getAllcompany();
             this.setState({
               btntype:true,
               percentilebtntype:true,
@@ -304,7 +309,7 @@ if(arg){
             })
           
             notification.success({message: 'File Uploaded Successfully',duration:0})
-            //this.getAllcompany();
+            
             console.log("Success:", data);
         }else{
          
@@ -346,86 +351,79 @@ if(arg){
   
   getCompanyData(dropdowncompany) {
 
-      console.log(dropdowncompany.value,'companyName')
+     
       this.setState({
-        selectedCompany: dropdowncompany,
+        selectedDerivedFile:dropdowncompany,
          btntype : false,
       })
-      const token= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTI1MTBlMzU2ZDM2NjYwNWIwNDUzMyIsImlhdCI6MTYyMTY5MDQyMX0.52MKXMLD-A_QZxImaut5fpKFJ7MQQZB-so1ws5gVi0Q";
-    let url ='http://65.1.140.116:9010/derived_datapoints/generate-json/'+dropdowncompany.value+'?access_token='+token;
-    fetch(url, {
-      method: "GET"
-    })
-    .then((response) => response.json())
-    .then((data) => {
-      let jsonDownload = document.querySelector(".btn-json-download");
-      if(jsonDownload){
-        jsonDownload.disabled = false;
-      }
-      let excel_Download = document.querySelector(".btn-excel-download");
-      if(excel_Download){
-        excel_Download.disabled = false;
-      }
+    //   const token= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTI1MTBlMzU2ZDM2NjYwNWIwNDUzMyIsImlhdCI6MTYyMTY5MDQyMX0.52MKXMLD-A_QZxImaut5fpKFJ7MQQZB-so1ws5gVi0Q";
+    // let url ='http://65.1.140.116:9010/derived_datapoints/generate-json/'+dropdowncompany.value+'?access_token='+token;
+    // fetch(url, {
+    //   method: "GET"
+    // })
+    // .then((response) => response.json())
+    // .then((data) => {
+    
       
-      console.log("get data Success:", data);
+    //   console.log("get data Success:", data);
      
     
      
-      const modifiedjsondata =data.data.fiscalYear;
-     console.log(modifiedjsondata, 'modifiedjsondata');
-      this.setState({
-        companyData: modifiedjsondata,
+    //   const modifiedjsondata =data.data.fiscalYear;
+    //  console.log(modifiedjsondata, 'modifiedjsondata');
+    //   this.setState({
+    //     companyData: modifiedjsondata,
        
-        percentileloading:false
-      })
-    })
-    .catch((error) => {
-      console.error("Error:", error);
+    //     percentileloading:false
+    //   })
+    // })
+    // .catch((error) => {
+    //   console.error("Error:", error);
       
-    });
+    // });
   }
-  getjsondata =()=>{
+//   getjsondata =()=>{
     
-    const companyname=this.state.selectedCompany.value;
+//     const companyname=this.state.selectedCompany.value;
     
-    console.log(companyname, 'companyname get json');
-    const token= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTI1MTBlMzU2ZDM2NjYwNWIwNDUzMyIsImlhdCI6MTYyMTY5MDQyMX0.52MKXMLD-A_QZxImaut5fpKFJ7MQQZB-so1ws5gVi0Q";
-    let url ='http://65.1.140.116:9010/derived_datapoints/generate-json/'+companyname+'?access_token='+token;
-    fetch(url, {
-      method: "GET"
-    })
-    .then((response) => response.json())
-    .then((data) => {
-      let jsonDownload = document.querySelector(".btn-json-download");
-      if(jsonDownload){
-        jsonDownload.disabled = false;
-      }
-      let excel_Download = document.querySelector(".btn-excel-download");
-      if(excel_Download){
-        excel_Download.disabled = false;
-      }
+//     console.log(companyname, 'companyname get json');
+//     const token= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTI1MTBlMzU2ZDM2NjYwNWIwNDUzMyIsImlhdCI6MTYyMTY5MDQyMX0.52MKXMLD-A_QZxImaut5fpKFJ7MQQZB-so1ws5gVi0Q";
+//     let url ='http://65.1.140.116:9010/derived_datapoints/generate-json/'+companyname+'?access_token='+token;
+//     fetch(url, {
+//       method: "GET"
+//     })
+//     .then((response) => response.json())
+//     .then((data) => {
+//       let jsonDownload = document.querySelector(".btn-json-download");
+//       if(jsonDownload){
+//         jsonDownload.disabled = false;
+//       }
+//       let excel_Download = document.querySelector(".btn-excel-download");
+//       if(excel_Download){
+//         excel_Download.disabled = false;
+//       }
       
-      console.log("get data Success:", data);
-      const year1 =data.year1;
-      const year2 =data.year2;
-      const modifiedjsondata =[{ year:year1[0].year, Data:year1}, {year:year2[0].year, Data:year2}]
-      this.setState({
-        companyData: modifiedjsondata,
-        percentileloading:false
-      })
+//       console.log("get data Success:", data);
+//       const year1 =data.year1;
+//       const year2 =data.year2;
+//       const modifiedjsondata =[{ year:year1[0].year, Data:year1}, {year:year2[0].year, Data:year2}]
+//       this.setState({
+//         companyData: modifiedjsondata,
+//         percentileloading:false
+//       })
      
-      notification.success({message:'percentile calculated successfully',duration:0})
-    })
-    .catch((error) => {
+//       notification.success({message:'percentile calculated successfully',duration:0})
+//     })
+//     .catch((error) => {
 
-      console.error("Error:", error);
+//       console.error("Error:", error);
       
-    });
-}
+//     });
+// }
 
   getCompanyCalculation=()=>{
     
-     const companyName= this.state.selectedCompany.value;
+     const companyName= this.state.selectedDerivedFile.value;
     
     this.setState({
       loading:true
@@ -480,7 +478,7 @@ if(arg){
       .then((data) => {
         
         console.log("percentileSuccess:", data);
-        this.getjsondata()
+        // this.getjsondata()
         this.setState({
           percentileloading:false
         })
@@ -571,6 +569,65 @@ this.setState({
   percentilebtntype:false,
 })
   }
+  getAllCompanyData=(arg)=>{
+
+    const token= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTI1MTBlMzU2ZDM2NjYwNWIwNDUzMyIsImlhdCI6MTYyMTY5MDQyMX0.52MKXMLD-A_QZxImaut5fpKFJ7MQQZB-so1ws5gVi0Q";
+    let url ='http://65.1.140.116:9010/derived_datapoints/generate-json/'+arg.value+'?access_token='+token;
+    fetch(url, {
+      method: "GET"
+    })
+    .then((response) => response.json())
+    .then((data) => {
+    
+      
+      console.log("get data Success:", data);
+     
+      let jsonDownload = document.querySelector(".btn-json-download");
+        if(jsonDownload){
+          jsonDownload.disabled = false;
+        }
+        let excel_Download = document.querySelector(".btn-excel-download");
+        if(excel_Download){
+          excel_Download.disabled = false;
+        }
+     
+      const modifiedjsondata =data.data.fiscalYear;
+     console.log(modifiedjsondata, 'modifiedjsondata');
+      this.setState({
+        companyData: modifiedjsondata,
+        selectedCompany: arg,
+        percentileloading:false
+      })
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      
+    });
+  }
+  // get ALL Company 
+    getAllcompany = () => {
+    const token= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTI1MTBlMzU2ZDM2NjYwNWIwNDUzMyIsImlhdCI6MTYyMTY5MDQyMX0.52MKXMLD-A_QZxImaut5fpKFJ7MQQZB-so1ws5gVi0Q";
+    fetch("http://65.1.140.116:9010/companies?access_token="+token+"&page=1&limit=100", {
+      method: "GET"
+    })
+      .then((response) =>
+        response.json())
+      .then((data) => {    
+        
+        this.setState({
+          allListCompanies:data.rows,
+          getAllcomp_status:false,
+          
+        })
+      
+      })
+      .catch((error) => {
+
+        console.error("Error:", error);
+        message.error(error.message,5)
+      });
+  }
+
 
   changetext=(arg)=>{
     if(!isNullOrUndefined(arg.file)){
@@ -787,11 +844,15 @@ this.confirmPopup_controversy.hide();
     let loading = this.state.loading;
     let spinner = this.state.spinner;
     let percentile_loader =this.state.percentileloading;
-    const allCompanyList = this.state.companies && this.state.companies.map((company) => {
+    const CompanyList = this.state.companies && this.state.companies.map((company) => {
         const listObj={value:company.id,label:company.companyName};
         return listObj;
     });
     const allControversy_company = this.state.companyID && this.state.companyID.map((controversy)=>{
+      const listObj={value:controversy.id, label:controversy.companyName};
+      return listObj;
+    })
+    const Allcompany = this.state.allListCompanies && this.state.allListCompanies.map((controversy)=>{
       const listObj={value:controversy.id, label:controversy.companyName};
       return listObj;
     })
@@ -843,7 +904,7 @@ this.confirmPopup_controversy.hide();
                 <div  style={{fontSize: "12px",color: "#155F9B",fontWeight: "600"}}>Select Company*</div>
                 <div style={{maxWidth: '40%', minWidth:'300px'}}>
                   <Select 
-                  options={allCompanyList}
+                  options={CompanyList}
                   onChange={this.getCompanyData}
                   isDisabled={status_dd}
                   />
@@ -886,11 +947,23 @@ this.confirmPopup_controversy.hide();
               <div style={{fontSize:'1.2rem', color: "#155F9B",fontWeight:'600'}}> STEP 4:</div>
               <div style={{ fontSize: '1.2rem', color: "#155F9B", marginLeft: "10px", padding: "3px" }}>Download JSON </div>
             </div>
-            <div style={{display:'flex', flexDirection:'column', marginLeft:'5%'}}>
-
-            <button type="button" className="btn btn-secondary btn-json-download" onClick={this.downloadData} style={{ minWidth: "13rem", fontSize: "15px", margin:"0px", marginBottom:"20px" }}>Download Data Json</button>
-             <button type="button" className="btn btn-success btn-excel-download" onClick={this.downloadExcel} style={{ width: "14rem", fontSize: "15px",margin:"0px", marginBottom:"20px" }} >Download Data json as excel</button>
-                      
+            <div style={{marginLeft:'5%', display:'flex',flexDirection:'column',justifyContent:'space-evenly',minHeight:'10rem'}}>
+            <div style={{maxWidth: '40%', minWidth:'300px'}}>
+                  <Select 
+                  options={Allcompany}
+                  onChange={this.getAllCompanyData}
+                  isDisabled={this.state.getAllcomp_status}
+                  placeholder="Select companies"
+                  />
+                </div>
+            
+            <div>
+            <button type="button" className="btn btn-secondary btn-json-download" onClick={this.downloadData} style={{ minWidth: "13rem", fontSize: "15px", margin:"0px", }}>Download Data Json</button>
+            </div>
+            <div>
+             <button type="button" className="btn btn-success btn-excel-download" onClick={this.downloadExcel} style={{ width: "14rem", fontSize: "15px",margin:"0px", }} >Download Data json as excel</button>
+             </div>          
+            
             </div>
         
           </Col>
