@@ -82,59 +82,28 @@ const onPrevious = () => onChange(step - 1);
                 <div>
                     {/* <div className="container mt-3"> */}
                     <nav className="navbar navbar-expand navbar-dark">
-                        <Link to={"/home"} className="navbar-brand">
+                        <div className="navbar-brand">
                             <Image className="nav-logo" src={logo} thumbnail />
-                        </Link>
+                        </div>
                         <div className="navbar-nav mr-auto">
                             <li className="nav-item">
-                                <Link  className="nav-link">
+                                <div  className="nav-link">
                                 ESGDS Portal   
-                                </Link>
-                            </li>
-
-                            {currentUser && (
-                            <li className="nav-item">
-                                <Link to={"/user"} className="nav-link">
-                                User
-                                </Link>
-                            </li>
-                            )}
-                        </div>
-
-                    {currentUser ? (
-                        <div className="navbar-nav ml-auto">
-                            <li className="nav-item">
-                                <Link to={"/profile"} className="nav-link">
-                                {currentUser.username}
-                                </Link>
-                            </li>
-                            <li className="nav-item">
-                                <a href="/" className="nav-link" onClick={logOut}>
-                                LogOut
-                                </a>
+                                </div>
                             </li>
                         </div>
-                    ) : (
+
+                
                         <div className="navbar-nav ml-auto">
                              <li className="nav-item">
-                            <Link  className="nav-link">
+                            <div  className="nav-link">
                             Welcome Super Admin!
-                            </Link>
+                            </div>
                         </li>
-                        {/* <li className="nav-item">
-                            <Link to={"/"} className="nav-link">
-                            Login
-                            </Link>
-                        </li>
-
-                        <li className="nav-item">
-                            <Link to={"/register"} className="nav-link">
-                            Sign Up
-                            </Link>
-                        </li> */}
+                      
                        
                         </div>
-                    )}
+                   
                 </nav>
                 <Container fluid style={{padding: '6% 0% 6% 0%', background:'#efefef'}}>
                 {/* style={{margin: '60px', width: '95%'}} */}

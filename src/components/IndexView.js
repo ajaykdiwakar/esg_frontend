@@ -28,7 +28,7 @@ class IndexView extends React.Component {
                        <img src={Upload1} height="180"></img>
                     </div>
                     <div className="card-body">
-                    <div className="content_title"> <h4 class="card-title"> Data Upload</h4></div>
+                    <div className="content_title"> <h4 className="card-title"> Data Upload</h4></div>
                     </div>
                 </div>
 
