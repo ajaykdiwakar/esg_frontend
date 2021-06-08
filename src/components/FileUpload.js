@@ -51,6 +51,7 @@ class FileUpload extends React.Component {
       controversyspinner:false,
       percentileloading:false,
       conroversycompanyData:[],
+      controversyDataExcels:[],
       status_dd:true,
       status_nic_dd:true,
       nicCodeList:'',
@@ -224,10 +225,31 @@ if(ele){
   
       
       console.log("controversy get value Success:", data);
-
+      console.log(data.data,'data.data');
+     
+     const mod_excel = data.data.data.map((ele)=>{
+     const dum_excel= ele.Data.map((arg)=> {
+       console.log(arg.controversy.length,'arg.controversy.length');
+       if (arg.controversy.length === 1){
+         console.log("len 0")
+         const modifyExcel={Year:arg.Year, DPCode:arg.DPCode, Response:arg.Response, Controversy_Textsnippet:arg.controversy[0].Textsnippet,Controversy_sourceName:arg.controversy[0].sourceName,Controversy_sourcePublicationDate:arg.controversy[0].sourcePublicationDate,Controversy_sourceURL:arg.controversy[0].sourceURL};
+         return modifyExcel;
+       }
+       if(arg.controversy.length === 0){
+       const modifyExcel={Year:arg.Year, DPCode:arg.DPCode, Response:arg.Response, Controversy_Textsnippet:"",Controversy_sourceName:"",Controversy_sourcePublicationDate:"",Controversy_sourceURL:""};
+        return modifyExcel;
+       }
+      });
+      console.log(dum_excel,'dum_excel');
+      const fullExcel={year:ele.year,companyName:ele.companyName,Data:dum_excel}
+      return fullExcel;
+      })
+      
+console.log(mod_excel,'mod_excel');
      
       this.setState({
         conroversycompanyData: data,
+        controversyDataExcels:mod_excel,
         percentileloading:false
       })
       
@@ -545,8 +567,8 @@ if(arg){
     
   }
   downloadControversyExcel=()=>{
-    const { conroversycompanyData } = this.state;
-    conroversycompanyData.data.data.map((arg)=>{
+    const { controversyDataExcels } = this.state;
+    controversyDataExcels.map((arg)=>{
       const options = {
         filename:arg.companyName+"["+ arg.year+"]"+".xlsx" ,
         fieldSeparator: ',',
