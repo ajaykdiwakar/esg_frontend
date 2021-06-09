@@ -27,6 +27,7 @@ class FileUpload extends React.Component {
   removeFile_controversy=[];
   confirmPopupClearAll='';
   removeFileClearAll=[];
+  reqArr=[];
 
   constructor(props) {
     
@@ -40,6 +41,7 @@ class FileUpload extends React.Component {
       allListCompanies:[],
       companyData: [],
       selectedDerivedFile:'',
+      
       companyName: [],
       companyID: [],
       btntype:true,
@@ -227,29 +229,31 @@ if(ele){
       console.log("controversy get value Success:", data);
       console.log(data.data,'data.data');
      
-     const mod_excel = data.data.data.map((ele)=>{
-     const dum_excel= ele.Data.map((arg)=> {
-       console.log(arg.controversy.length,'arg.controversy.length');
-       if (arg.controversy.length === 1){
-         console.log("len 0")
-         const modifyExcel={Year:arg.Year, DPCode:arg.DPCode, Response:arg.Response, Controversy_Textsnippet:arg.controversy[0].Textsnippet,Controversy_sourceName:arg.controversy[0].sourceName,Controversy_sourcePublicationDate:arg.controversy[0].sourcePublicationDate,Controversy_sourceURL:arg.controversy[0].sourceURL};
-         return modifyExcel;
-       }
-       if(arg.controversy.length === 0){
-       const modifyExcel={Year:arg.Year, DPCode:arg.DPCode, Response:arg.Response, Controversy_Textsnippet:"",Controversy_sourceName:"",Controversy_sourcePublicationDate:"",Controversy_sourceURL:""};
-        return modifyExcel;
-       }
+      data.data.data.map((ele)=>{
+        console.log(ele,'ele');
+      let subArr=[];
+        for ( let v of ele.Data ) {
+          if(v.controversy.length === 0){
+            subArr.push({Year:v.Year, DPCode:v.DPCode, Response:v.Response, Controversy_Textsnippet:"",Controversy_sourceName:"",Controversy_sourcePublicationDate:"",Controversy_sourceURL:""});
+          } else {
+              for ( let b in v.controversy){
+                  if(b==0){
+                    subArr.push({Year:v.Year, DPCode:v.DPCode, Response:v.Response,Controversy_Textsnippet:v.controversy[b].Textsnippet,Controversy_sourceName:v.controversy[b].sourceName,Controversy_sourcePublicationDate:v.controversy[b].sourcePublicationDate,Controversy_sourceURL:v.controversy[b].sourceURL });
+                  } else {
+                    subArr.push({Year:'',DPCode:'',Response:'',Controversy_Textsnippet:v.controversy[b].Textsnippet,Controversy_sourceName:v.controversy[b].sourceName,Controversy_sourcePublicationDate:v.controversy[b].sourcePublicationDate,Controversy_sourceURL:v.controversy[b].sourceURL });
+                  }
+              }
+          }
+      }
+    this.reqArr.push({year:ele.year,companyName:ele.companyName,Data:subArr});
       });
-      console.log(dum_excel,'dum_excel');
-      const fullExcel={year:ele.year,companyName:ele.companyName,Data:dum_excel}
-      return fullExcel;
-      })
       
-console.log(mod_excel,'mod_excel');
+      
+console.log(this.reqArr,'mod_excel');
      
       this.setState({
         conroversycompanyData: data,
-        controversyDataExcels:mod_excel,
+        controversyDataExcels:this.reqArr,
         percentileloading:false
       })
       
@@ -568,6 +572,7 @@ if(arg){
   }
   downloadControversyExcel=()=>{
     const { controversyDataExcels } = this.state;
+    console.log(controversyDataExcels,'controversyDataExcels')
     controversyDataExcels.map((arg)=>{
       const options = {
         filename:arg.companyName+"["+ arg.year+"]"+".xlsx" ,
