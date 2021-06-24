@@ -56,6 +56,7 @@ class FileUpload extends React.Component {
       controversyDataExcels:[],
       status_dd:true,
       status_nic_dd:true,
+      errjson:null,
       nicCodeList:'',
       status_selectControversy_dd:true,
       content_file_attached_status:"",
@@ -100,6 +101,11 @@ class FileUpload extends React.Component {
           let uploadControversy = document.querySelector(".btn-upload-controversy");
           if(uploadControversy){
             uploadControversy.disabled = true;
+          }
+          
+          let errorjson = document.querySelector(".err-json");
+          if(errorjson){
+            errorjson.style.display ='none';
           }
           this.getAllcompany();
           notification.info({message:"You can directly generate JSON for companies in STEP 4",duration:0})
@@ -302,11 +308,14 @@ if(arg){
       body: data,
       
     })
-      .then((response) => response.json())
+      .then((response) => { 
+        console.log(response, 'esg upload response');
+        return response.json();
+      })
       
       .then((data) => {
         
-        if (data.message === "Files upload success") {
+        if (data.status === "200") {
           const n =this.state.content_file_attached_status;
           console.log(n,"selected file length");
           [...Array(n)].map((e, i) => {
@@ -325,6 +334,10 @@ if(arg){
             // if(excel_Download){
             //   excel_Download.disabled = true;
             // }
+            let errorjson = document.querySelector(".err-json");
+            if(errorjson){
+              errorjson.style.display ='none';
+            }
             let uploadEGS = document.querySelector(".btn-upload-excel");
             if(uploadEGS){
               uploadEGS.disabled = true;
@@ -342,8 +355,18 @@ if(arg){
             notification.success({message: 'File Uploaded Successfully',duration:0})
             
             console.log("Success:", data);
-        }else{
-         
+        }
+        console.log(data.status,data.missingDatapoints, 'status','missed dps')
+        if (data.status === "400") {
+          if(data.missingDatapoints){
+            this.setState({
+              errjson: data.missingDatapoints
+            });
+            let errorjson = document.querySelector(".err-json");
+          if(errorjson){
+            errorjson.style.display ='block';
+          }
+          }
           const n =this.state.content_file_attached_status;
           console.log(n,"selected file length");
           [...Array(n)].map((e, i) => {
@@ -540,7 +563,18 @@ if(arg){
         })
      
     }  
-
+    errorjsonbtn = () => {
+      const { errjson } = this.state;
+      errjson && errjson.map((e)=>{
+        const fileName =e.companyName+"["+ e.year+"]"+".json";
+        const fileToSave = new Blob([JSON.stringify(e)], {
+          type: 'text/plain;charset=utf-8',
+          name: fileName,
+           });
+          // Save the file
+          saveAs(fileToSave, fileName);
+      });
+    }
   downloadData = () => { 
     const { companyData } = this.state
     // Create a blob of the data
@@ -574,6 +608,7 @@ if(arg){
       })
     
   }
+  
   downloadControversyExcel=()=>{
     const { controversyDataExcels } = this.state;
     console.log(controversyDataExcels,'controversyDataExcels')
@@ -919,7 +954,8 @@ this.confirmPopup_controversy.hide();
                 </header>
                 <div style={{display:"flex",justifyContent:"flex-start",alignItems:"center",minHeight:"5rem"}}>
     
-                  <button type="button" className="btn btn-info btn-upload-excel" onClick={this.handleChangeexcel} style={{ minWidth: "16rem", fontSize: "15px",margin:"0px" }} >Upload</button>
+                  <button type="button" className="btn btn-info btn-upload-excel" onClick={this.handleChangeexcel} style={{ minWidth: "16rem", fontSize: "15px", padding:'0px'}} >Upload</button>
+                  <button type="button" className="btn btn-secondary err-json" onClick={this.errorjsonbtn} style={{ minWidth: "16rem", fontSize: "15px", padding:'0px'}} >Get missed DPs</button>
                 </div>
               </div>
               </Spin>
