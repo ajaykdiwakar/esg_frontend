@@ -226,21 +226,26 @@ if(ele){
           } 
   
       
-      console.log("controversy get value Success:", data);
-      console.log(data.data,'data.data');
-     
+      console.log("controversy get value Success:", data.data);
+      const cinforjsom = data.data && data.data.CIN;
+      const jsonconData = [];
+      for (const i of data.data.data) {
+        jsonconData.push({companyName:i.companyName,CIN:cinforjsom,Data:i.Data});
+      }
+      console.log(jsonconData,'jsonconData');
+      const cin = data.data && data.data.CIN;
       data.data.data.map((ele)=>{
         console.log(ele,'ele');
       let subArr=[];
         for ( let v of ele.Data ) {
           if(v.controversy.length === 0){
-            subArr.push({Year:v.Year, DPCode:v.DPCode, Response:v.Response, Controversy_Textsnippet:"",Controversy_sourceName:"",Controversy_sourcePublicationDate:"",Controversy_sourceURL:""});
+            subArr.push({Year:v.Year, DPCode:v.DPCode, Response:v.Response, Controversy_Textsnippet:"",Controversy_sourceName:"",Controversy_sourcePublicationDate:"",Controversy_sourceURL:"",CIN:cin, Company:ele.companyName});
           } else {
               for ( let b in v.controversy){
-                  if(b==0){
-                    subArr.push({Year:v.Year, DPCode:v.DPCode, Response:v.Response,Controversy_Textsnippet:v.controversy[b].Textsnippet,Controversy_sourceName:v.controversy[b].sourceName,Controversy_sourcePublicationDate:v.controversy[b].sourcePublicationDate,Controversy_sourceURL:v.controversy[b].sourceURL });
+                  if(b===0){
+                    subArr.push({Year:v.Year, DPCode:v.DPCode, Response:v.Response,Controversy_Textsnippet:v.controversy[b].Textsnippet,Controversy_sourceName:v.controversy[b].sourceName,Controversy_sourcePublicationDate:v.controversy[b].sourcePublicationDate,Controversy_sourceURL:v.controversy[b].sourceURL,CIN:cin, Company:ele.companyName  });
                   } else {
-                    subArr.push({Year:'',DPCode:'',Response:'',Controversy_Textsnippet:v.controversy[b].Textsnippet,Controversy_sourceName:v.controversy[b].sourceName,Controversy_sourcePublicationDate:v.controversy[b].sourcePublicationDate,Controversy_sourceURL:v.controversy[b].sourceURL });
+                    subArr.push({Year:'',DPCode:'',Response:'',Controversy_Textsnippet:v.controversy[b].Textsnippet,Controversy_sourceName:v.controversy[b].sourceName,Controversy_sourcePublicationDate:v.controversy[b].sourcePublicationDate,Controversy_sourceURL:v.controversy[b].sourceURL,CIN:cin, Company:ele.companyName  });
                   }
               }
           }
@@ -252,7 +257,7 @@ if(ele){
 console.log(this.reqArr,'mod_excel');
      
       this.setState({
-        conroversycompanyData: data,
+        conroversycompanyData: jsonconData,
         controversyDataExcels:this.reqArr,
         percentileloading:false
       })
@@ -523,11 +528,10 @@ if(arg){
     downloadControversyData = () => {
     
       const { conroversycompanyData } = this.state;
-      
       // Create a blob of the data
-      conroversycompanyData.data.data.map((args)=>{
-        const fileName = args.companyName+"["+ args.year+"]"+".json";
-        const fileToSave = new Blob([JSON.stringify(args.Data)], {
+      conroversycompanyData.map((args)=>{
+        const fileName = args.companyName+"["+ args.Data[0].Year+"]"+".json";
+        const fileToSave = new Blob([JSON.stringify(args)], {
           type: 'text/plain;charset=utf-8',
           name: fileName,
            });
