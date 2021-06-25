@@ -40,6 +40,7 @@ class FileUpload extends React.Component {
       companies: [],
       allListCompanies:[],
       companyData: [],
+      companyDataexcel:[],
       selectedDerivedFile:'',
       
       companyName: [],
@@ -579,8 +580,8 @@ if(arg){
     const { companyData } = this.state
     // Create a blob of the data
     companyData.map((args)=>{
-      const fileName =this.state.selectedCompany.label+"["+ args.year+"]"+".json";
-      const fileToSave = new Blob([JSON.stringify(args.Data)], {
+      const fileName =args.companyName+"["+ args.fiscalYear.year+"]"+".json";
+      const fileToSave = new Blob([JSON.stringify(args)], {
         type: 'text/plain;charset=utf-8',
         name: fileName,
          });
@@ -592,9 +593,9 @@ if(arg){
   }
   downloadExcel=()=>{
 
-    this.state.companyData.map((arg)=>{
+    this.state.companyDataexcel.map((arg)=>{
       const options = {
-        filename:this.state.selectedCompany.label+"["+ arg.year+"]"+".xlsx" ,
+        filename:arg[0].CompanyName+"["+ arg[0].Year+"]"+".xlsx" ,
         fieldSeparator: ',',
         quoteStrings: '"',
         decimalSeparator: '.',
@@ -604,7 +605,7 @@ if(arg){
         useKeysAsHeaders: true,
       };
       const csvExporter = new ExportToCsv(options);
-      csvExporter.generateCsv(arg.Data);
+      csvExporter.generateCsv(arg);
       })
     
   }
@@ -656,11 +657,24 @@ this.setState({
         if(excel_Download){
           excel_Download.disabled = false;
         }
-     
-      const modifiedjsondata =data.data.fiscalYear;
-     console.log(modifiedjsondata, 'modifiedjsondata');
+     console.log(data, 'copany data json')
+      const modifiedjsondata =data.data.fiscalYear.map((e)=>{
+          return {NIC_CODE: data.data.NIC_CODE, NIC_industry: data.data.NIC_industry, companyID: data.data.companyID, companyName: data.data.companyName, fiscalYear: e };
+      })
+      const CINexcel = data.data.companyID;
+      const compNameexcel = data.data.companyName;
+      console.log(compNameexcel ,'compNameexcel');
+      const modifiedexceldata = data.data.fiscalYear.map((e)=>{
+        const f =e.Data.map((i)=>{
+          const t = {...i, CIN: CINexcel, CompanyName: compNameexcel};
+          return t;
+        })
+        return f;
+      })
+     console.log(modifiedexceldata, 'modifiedexceldata');
       this.setState({
         companyData: modifiedjsondata,
+        companyDataexcel :modifiedexceldata,
         selectedCompany: arg,
         percentileloading:false
       })
