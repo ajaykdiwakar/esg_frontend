@@ -173,7 +173,10 @@ if(ele){
            
             notification.success({message: 'File Uploaded Successfully',duration:0})
           }else{
-            
+            notification.error({message: data.message,duration:0});
+            this.setState({
+              controversyspinner:false,
+            })
             const n =this.state.content_file_attached_status_Controversy;
             console.log(n,"selected file length");
             [...Array(n)].map((e, i) => {
@@ -237,7 +240,7 @@ if(ele){
       const cinforjsom = data.data && data.data.CIN;
       const jsonconData = [];
       for (const i of data.data.data) {
-        jsonconData.push({companyName:i.companyName,CIN:cinforjsom,Data:i.Data});
+        jsonconData.push({companyName: i.companyName, CIN: cinforjsom, data: i.Data});
       }
       console.log(jsonconData,'jsonconData');
       const cin = data.data && data.data.CIN;
@@ -554,7 +557,7 @@ if(arg){
       const { conroversycompanyData } = this.state;
       // Create a blob of the data
       conroversycompanyData.map((args)=>{
-        const fileName = args.companyName+"["+ args.Data[0].Year+"]"+".json";
+        const fileName = ` ${args.companyName}[ ${args.data[0].Year} ].json`;
         const fileToSave = new Blob([JSON.stringify(args)], {
           type: 'text/plain;charset=utf-8',
           name: fileName,
@@ -579,8 +582,8 @@ if(arg){
   downloadData = () => { 
     const { companyData } = this.state
     // Create a blob of the data
-    companyData.map((args)=>{
-      const fileName =args.companyName+"["+ args.fiscalYear.year+"]"+".json";
+    companyData.map((args) => {
+      const fileName = `${args.data.companyName}[ ${args.data.fiscalYear[0][0].year}].json`;
       const fileToSave = new Blob([JSON.stringify(args)], {
         type: 'text/plain;charset=utf-8',
         name: fileName,
@@ -637,7 +640,14 @@ this.setState({
 })
   }
   getAllCompanyData=(arg)=>{
-
+    let jsonDownload = document.querySelector(".btn-json-download");
+    if(jsonDownload){
+      jsonDownload.disabled = true;
+    }
+    let excel_Download = document.querySelector(".btn-excel-download");
+    if(excel_Download){
+      excel_Download.disabled = true;
+    }
     const token= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTI1MTBlMzU2ZDM2NjYwNWIwNDUzMyIsImlhdCI6MTYyMTY5MDQyMX0.52MKXMLD-A_QZxImaut5fpKFJ7MQQZB-so1ws5gVi0Q";
     let url ='http://65.1.140.116:9010/derived_datapoints/generate-json/'+arg.value+'?access_token='+token;
     fetch(url, {
@@ -646,6 +656,8 @@ this.setState({
     .then((response) => response.json())
     .then((data) => {
     
+      if(data.status === 200){
+
       
       console.log("get data Success:", data);
      
@@ -658,8 +670,19 @@ this.setState({
           excel_Download.disabled = false;
         }
      console.log(data, 'copany data json')
-      const modifiedjsondata =data.data.fiscalYear.map((e)=>{
-          return {NIC_CODE: data.data.NIC_CODE, NIC_industry: data.data.NIC_industry, companyID: data.data.companyID, companyName: data.data.companyName, fiscalYear: e };
+     
+    const modifiedjsondata =data.data.fiscalYear.map((e)=>{
+          return {
+            message: data.message,
+            status: data.status,
+            data: {
+              companyName: data.data.companyName, 
+              companyID: data.data.companyID, 
+              NIC_CODE: data.data.NIC_CODE,
+              NIC_industry: data.data.NIC_industry, 
+              fiscalYear: [[e]]
+            } 
+          };
       })
       const CINexcel = data.data.companyID;
       const compNameexcel = data.data.companyName;
@@ -678,9 +701,15 @@ this.setState({
         selectedCompany: arg,
         percentileloading:false
       })
+    }
+    else{
+      notification.error({message:data.message,duration:0});
+    }
     })
+  
     .catch((error) => {
       console.error("Error:", error);
+      notification.error({message:error.message,duration:0});
       
     });
   }
