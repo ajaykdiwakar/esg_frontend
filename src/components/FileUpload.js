@@ -110,7 +110,7 @@ class FileUpload extends React.Component {
           }
           this.getAllcompany();
           notification.info({message:"You can directly generate JSON for companies in STEP 4",duration:0})
-         
+         this.getNicList();
   }
   actionCompleteControversy=(ele)=>{
     document.querySelector('.e-file-clear-btn').style.display='none';
@@ -122,6 +122,21 @@ if(ele){
 }
   }
  
+  getNicList = () => {
+    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTI1MTBlMzU2ZDM2NjYwNWIwNDUzMyIsImlhdCI6MTYyMTY5MDQyMX0.52MKXMLD-A_QZxImaut5fpKFJ7MQQZB-so1ws5gVi0Q";
+    let url = `http://65.1.140.116:9010/companies/all_nic?access_token=`+token;
+    fetch(url, {
+      method: "GET"
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      this.setState({
+        nicCodeList:data.rows,
+      })
+      console.log(data, 'full nic list');
+    })
+  }
+
   handleControversyexcel =(e) =>{
     console.log(this.state.selectedControversyFiles,'this.state.selectedControversyFiles');
     e.preventDefault();
@@ -350,8 +365,7 @@ if(arg){
             this.setState({
               btntype:true,
               percentilebtntype:true,
-              companies:data.companies,
-              nicCodeList:data.nicList,
+              // companies:data.companies,
               spinner:false,
               status_dd:false,
             })
@@ -716,7 +730,7 @@ this.setState({
   // get ALL Company 
     getAllcompany = () => {
     const token= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTI1MTBlMzU2ZDM2NjYwNWIwNDUzMyIsImlhdCI6MTYyMTY5MDQyMX0.52MKXMLD-A_QZxImaut5fpKFJ7MQQZB-so1ws5gVi0Q";
-    fetch("http://65.1.140.116:9010/companies?access_token="+token+"&page=1&limit=100", {
+    fetch("http://65.1.140.116:9010/companies?access_token="+token, {
       method: "GET"
     })
       .then((response) =>
@@ -953,10 +967,10 @@ this.confirmPopup_controversy.hide();
     let loading = this.state.loading;
     let spinner = this.state.spinner;
     let percentile_loader =this.state.percentileloading;
-    const CompanyList = this.state.companies && this.state.companies.map((company) => {
-        const listObj={value:company.id,label:company.companyName};
-        return listObj;
-    });
+    // const CompanyList = this.state.companies && this.state.companies.map((company) => {
+    //     const listObj={value:company.id,label:company.companyName};
+    //     return listObj;
+    // });
     const allControversy_company = this.state.companyID && this.state.companyID.map((controversy)=>{
       const listObj={value:controversy.id, label:controversy.companyName};
       return listObj;
@@ -1014,9 +1028,9 @@ this.confirmPopup_controversy.hide();
                 <div  style={{fontSize: "12px",color: "#155F9B",fontWeight: "600"}}>Select Company*</div>
                 <div style={{maxWidth: '40%', minWidth:'300px'}}>
                   <Select 
-                  options={CompanyList}
+                  options={Allcompany}
                   onChange={this.getCompanyData}
-                  isDisabled={status_dd}
+                  // isDisabled={status_dd}
                   />
                 </div>
                 <div>
@@ -1039,7 +1053,7 @@ this.confirmPopup_controversy.hide();
                 <div style={{maxWidth: '40%', minWidth:'300px'}}>
                   <Select 
                   options={nicCodeOption}
-                  isDisabled={status_nic_dd}
+                  // isDisabled={status_nic_dd}
                   onChange={this.getNiccode}
                   />
                 </div>
