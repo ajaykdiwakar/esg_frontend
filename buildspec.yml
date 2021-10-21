@@ -1,0 +1,38 @@
+version: 0.2
+#ESG FRONTEND-UI S3 DEPLOYMENT
+
+# Uses runners shell to execute set of commands below
+
+env:
+   shell: /bin/sh 
+
+# phases represent a sequence of tasks that will be executed as part of the job
+
+phases:
+  install:
+    on-failure: ABORT
+    runtime-versions:
+      nodejs: 14
+    commands:
+      - echo Getting started first stage 
+  pre_build:
+    on-failure: ABORT
+    commands:
+      - echo Installing source NPM dependencies...
+      - npm install
+      - node --version
+  build:
+    on-failure: ABORT
+    commands:
+      - echo Build started on `date`
+      - npm run build
+      - echo Build finished, now moving to S3
+  post_build:
+    on-failure: ABORT
+    commands:
+      - echo Build completed on `date`
+artifacts:
+  files:
+    - '**/*'
+  #discard-paths: no
+  #base-directory: build
